@@ -1,0 +1,421 @@
+---
+title: "Homework 4: Classification"
+author: "Lara Haase lhaase"
+date: 'Due: April 22, 2020'
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    theme: cerulean
+    highlight: tango
+---
+
+
+### Preamble: Loading packages and data 
+
+```{r, message=FALSE}
+library(ggplot2)
+library(ISLR)
+library(MASS)
+library(klaR)  # You may need to install this one
+library(knitr)
+library(glmnet)
+library(gam)
+library(plyr)
+
+set.seed(14504008)
+
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+options(scipen = 4)
+
+# Adulthood data
+n.obs <- 3000
+age <- pmin(pmax(rnorm(n.obs, mean = 30, sd = 10), 5), 50)
+is.adult <- as.numeric(age >= 18)
+age.data <- data.frame(age = age, is.adult = as.factor(is.adult))
+```
+
+```{r, cache = TRUE}
+# Spam data
+spamdf <- read.table("http://www.andrew.cmu.edu/user/achoulde/95791/data/spamdata.txt")
+varinfo <- read.table("http://www.andrew.cmu.edu/user/achoulde/95791/data/spamids2.txt", sep=" ",  stringsAsFactors = FALSE)
+is.test <- read.table("http://www.andrew.cmu.edu/user/achoulde/95791/data/traintest_indicator.txt", header=FALSE)
+is.test <- as.integer(is.test[,1])
+
+```
+
+```{r}
+# Partition the spam data
+
+# log-transform the x variable
+spamdf.log <- spamdf
+spamdf.log[, 1:(ncol(spamdf) - 1)] <- log(0.1 + spamdf[, 1:(ncol(spamdf) - 1)])
+
+# Add names
+colnames(spamdf.log) <- c(varinfo[,1], "is.spam")
+
+spam.train <- subset(spamdf.log, subset = is.test == 0)
+spam.test <- subset(spamdf.log, subset = is.test == 1)
+```
+
+### Problem 1: Instability of Logistic regression
+
+> This question walks you through a simple example that illustrates the instability of logistic regression coefficient estimates in cases where the classes are clearly separable.  
+
+> This instability can arise in practice when we have inputs $X$ that are categorical variables with a large number of levels.  In such cases, particularly when we have low cell counts, it is not uncommon for all observed outcomes in a particular category to be either all $0$ or all $1$.  This leads the coefficient corresponding to that category to be very unstable.
+
+##### **(a)** The `age.data` data frame contains information on `r nrow(age.data)` individuals.  We want to use the `age` variable to try to classify individuals as adults or non-adults.  The outcome variable `is.adult` is 1 for adults and 0 for non-adults.  
+
+##### Following the `geom_histogram(position = "fill")` examples (at this link)[http://docs.ggplot2.org/0.9.3.1/geom_histogram.html], construct a conditional probability plot to show how the probability of being an adult varies with age.  
+
+```{r}
+
+ggplot(age.data, aes(age, fill = is.adult)) + geom_histogram(binwidth = 1, position = "fill")
+
+```
+
+<font color="#157515">
+
+
+</font>
+
+##### **(b)** Is this a difficult classification problem?  Can you think of a simple rule that gives 100\% classification accuracy for this task?  Display a confusion matrix to verify that your rule works.
+
+```{r}
+
+rule <- as.integer(age.data$age >= 18)
+simple.confusion <- table(rule, age.data$is.adult)
+simple.confusion
+
+```
+
+<font color="#157515">
+
+
+</font>
+
+##### **(c)** Fit a logistic regression to the data. Use the `kable()` command to print out a nice summary of your coefficients estimate table.  Is the coefficient of `age` statistically significant?
+
+```{r}
+train <- sample(1:nrow(age.data), 2400)
+test <- age.data[-train,]
+train<- age.data[train,]
+
+model<- glm(is.adult ~.,family=binomial(link='logit'),data=train)
+
+kable(coef(summary(model)))
+
+```
+
+<font color="#157515">
+
+- No, it is not statistically significant. 
+
+</font>
+
+##### **(d)** Using a probability cutoff of 0.5, produce a confusion matrix for your logistic regression output.  Calculate the mislcassification rate of the logistic regression classifier.    Does the logistic regression classifier do a good job of classifying individuals as adult vs non-adult?
+
+```{r}
+fitted.results <- predict(model, newdata=test ,type='response')
+fitted.results <- ifelse(fitted.results > 0.5,1,0)
+
+confusion <- table(fitted.results, test$is.adult)
+confusion
+```
+```{r}
+misClasificError <- mean(fitted.results != test$is.adult)
+print(paste('Accuracy:',1-misClasificError))
+
+```
+
+<font color="#157515">
+
+- Yes, the logistic regression seems to do a reasonably good job classifying, since it made no mistakes with an overall accuracy score of 100%
+
+</font>
+
+##### **(e)** Construct a histogram of the estimated probabilities from your logistic regression.  Describe what you see. 
+
+```{r}
+results <- predict(model, newdata=age.data ,type='response')
+age.data$results <- as.factor(ifelse(results > 0.5,1,0))
+
+ggplot(age.data, aes(age, fill = results)) + geom_histogram(binwidth = 1, position = "fill")
+
+```
+
+<font color="#157515">
+
+- The Logistic regression appears to have the same results as the simple rule. 
+
+</font>
+
+
+### Problem 2: Linear Discriminant Analysis, Quadratic Discriminant Analysis, Naive Bayes
+
+> This problem introduces you to the `klaR` library, which provides a set of useful model fitting and visualization tools. You will also use some fitting functions from the `MASS` library.
+
+> You may find the tutorial at [this link](http://www.statmethods.net/advstats/discriminant.html) helpful for solving this problem.
+
+> We're going to use Fisher's famous `iris` data set for this problem.  This data set comes pre-loaded with R.  You can learn more about it by looking at the helpfile `?iris`.  It's fair to say that everyone who has ever learned Data Mining in R has encountered the iris data at one point or another
+
+##### **(a)** Use the `lda` function from the `MASS` library to build an LDA classifier predicting `Species` from the 4 measurements in the `iris` data.  Call this fit `iris.lda`.  
+
+```{r}
+iris.lda<- lda(Species ~ ., data=iris)
+
+```
+
+##### Explore the `iris.lda` object to answer the following:  What are the group means and prior probabilities for each class?  
+
+```{r}
+iris.lda
+```
+
+
+
+##### Run the `plot()` command on your `iris.lda` object.  This produces what is called a discriminant plot.  When we have $K$ possible classes, we get $K-1$ so-called linear discriminants.  You should think of these as "derived features" that provide a helpful low-dimensional representation of the data.  The more spread out the classes appear in these discriminant plots, the better the LDA method performs (and vice versa).  You may supply the argument `col = as.numeric(iris$Species)` to colour the points based on the true class label.
+
+```{r}
+plot(iris.lda, col = as.numeric(iris$Species))
+
+```
+
+#####  **(b)** Using the `predict` function, calculate the 3x3 confusion matrix for the lda classifier.  What is the overall misclassification rate of the LDA classifier?  Does LDA perform well on this problem?
+
+```{r}
+lda.results <- predict(iris.lda)
+
+iris.confusion <- table(lda.results$class, iris$Species)
+iris.confusion
+```
+```{r}
+misclass = (3/150)*100
+print(paste('Misclassification Rate: ',misclass,'%'))
+
+```
+
+<font color="#157515">
+
+- Yes, the LDA performs well on this problem, with a low rate of misclassification at 2%.
+
+</font>
+
+##### Again using the `predict()` function:  What are the estimated posterior class probabilities for the 120th observation?  You should run `zapsmall()` on the vector of posterior probabilities to get it to display nicely.
+
+```{r}
+summary(lda.results)
+zapsmall(lda.results$posterior[120,])
+```
+
+##### **(c)** Use the `partimat()` function from the `klaR` package with `method = "lda"` to get bivariate plots showing the LDA decision boundaries.  Misclassifications are indicated by red text.  
+
+```{r, cache = TRUE, fig.width = 10, fig.height = 6}
+partimat(Species ~ ., data = iris, method = "lda")
+```
+
+##### Two of the classes begin with the letter v, which makes the above plot hard to interpret.  The following code produces a new data frame, where the Species column has been transformed according to: `S = setosa`, `C = versicolor`, `N = verginica`.  Try constructing the plot again.  Do all 2-variable combinations of the inputs do an equally good job of separating the three classes?  
+
+```{r, cache = TRUE, fig.width = 10, fig.height = 6}
+iris2 <- transform(iris, Species = mapvalues(Species, c("setosa", "versicolor", "virginica"),
+                                             c("S", "C", "N")))
+
+partimat(Species ~ ., data = iris2, method = "lda")
+
+```
+
+<font color="#157515">
+
+- NO. Sepal.Width & Sepal.Length do partly atrocious at classifiying together. The rest of the 2-variable combinations all do relatively well, with none obviously better than any other. 
+
+</font>
+
+##### **(d)**  Using the `iris2` data frame, run the `partimat` command again, this time with `method = "qda"`.  Does it look like allowing quadratic boundaries changes much?  
+
+```{r, cache = TRUE, fig.width = 10, fig.height = 6}
+partimat(Species ~ ., data = iris2, method = "qda")
+
+```
+
+<font color="#157515">
+
+- No, the performance appears to be roughly the same between the two methods. Petal.Width & Petal.Length MIGHT perform slightly better with QDA, but only by one or two data points.
+
+</font>
+
+##### **(e)**  Using the `geom = "density"` or `geom_density()` functionality in `ggplot2`, construct density plots for the 4 input variables.  Your density plots should look similar to the ones shown for `income` and `balance` in Lecture 8.  There are 3 classes in the iris data instead of two, so your plots should have 3 densities overlaid.  The `alpha` argument may be used to change the transparency.  
+
+##### Based on these plots, does it look like Naive Bayes will be an effective classifier for the iris data?  Explain.  
+
+```{r}
+ggplot(iris2, aes(Sepal.Length, fill = Species)) + geom_density(alpha=0.5)
+```
+```{r}
+ggplot(iris2, aes(Sepal.Width, fill = Species)) + geom_density(alpha=0.5)
+```
+```{r}
+ggplot(iris2, aes(Petal.Length, fill = Species)) + geom_density(alpha=0.5)
+```
+```{r}
+ggplot(iris2, aes(Petal.Width, fill = Species)) + geom_density(alpha=0.5)
+```
+<font color="#157515">
+
+- Yes, Naive Bayes will likely be a good classifer for the `iris` dataset because it will allow for much more flexibility that LDA, and still more flexibilty than QDA.
+
+</font>
+
+##### **(f)** Use the `NaiveBayes()` command with `usekernel = TRUE` to fit a Naive Bayes classifier to the `iris` data.  Save your output as `iris.nb`.  Produce a confusion matrix for the Naive Bayes classifier.   What is the misclassification rate of Naive Bayes on this problem?  How does the performance of Naive Bayes compare to that of LDA in this example?
+
+```{r}
+iris.nb<- NaiveBayes(Species ~ ., data = iris, usekernel = TRUE)
+
+nb.results <- predict(iris.nb)
+
+nb.confusion <- table(nb.results$class, iris$Species)
+nb.confusion
+```
+```{r}
+misnb<- (6/150)*100
+print(paste('Misclassification Rate: ',misnb,'%'))
+```
+<font color="#157515">
+
+- In this example, Naive Bayes doesn't perform quite as well as LDA.
+
+</font>
+
+##### **(g)**  What is the true class of the 120th observation? What are the estimated posterior probabilities for the 120th observation according to Naive Bayes?  Are they similar to those estimated by LDA?  Do LDA and Naive Bayes result in the same classification for this observation?  Does either method classify this observation correctly?
+
+```{r}
+iris[120,]$Species
+```
+```{r}
+zapsmall(nb.results$posterior[120,])
+```
+<font color="#157515">
+
+- NO, the posterior probabilities estimated by LDA are closer to the true class than Naive Bayes. No, LDA classifies this observation correctly as `virginica` but Naive Bayes classifies it incorrectly as `versicolor`.
+
+</font>
+
+
+### Problem 3 Extra Credit: Additive Logistic Regression with spam data
+
+> In the preamble to this document you will find pre-processed spam data to use for this problem.  You have two data sets: `spam.train` and `spam.test`.  The outcome is `is.spam`, which is 1 if the given email is spam and 0 if it isn't.  You will use `spam.train` to build a spam classifier, which you will then test on the data in `spam.test`.  
+
+> For more information on the meaning of these variables, you may refer to the variable information file here: [https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.names](https://archive.ics.uci.edu/ml/machine-learning-databases/spambase/spambase.names)
+
+> The input variables have extremely highly skewed distributions, so I applied the transformation `log(0.1 + x)` to every input variable. Thus the inputs are now approximately log-frequencies or log-counts instead of the raw frequencies/counts. 
+
+> To answer the questions in part (a), you will find it helpful to know that this data was made publicly available by George Forman from Hewlett-Packard laboratories in Palo Alto California.  These are emails from his HP Labs work account.
+
+##### **(a)** Fit a logistic regression model to the training data.  Name your logistic regression object `spam.logit`.  Remember that the formula specification `y ~ .` will regress `y` on every other variable in the specified data set.  
+
+#####  Use the `kable()` command to produce a nice summary of the logistic regression model.   Make sure you set the `digits = ` argument appropriately so that the number of decimal places is reasonable for each column.  Is increased frequency of the `!` and `$` characters associated with higher or lower likelihood that the email is spam? 
+
+##### There are several terms that are associated with decreased likelihood that this email is spam.  Knowing what you do about the source of the data, pick out 3 terms with a negative coefficient where you can explain why the terms should have negative coefficients.
+
+```{r}
+spam.logit<- glm(is.spam ~.,family=binomial(link='logit'),data=spam.train)
+
+kable(coef(summary(spam.logit)), digits = 3)
+
+```
+
+<font color="#157515">
+
+- Increased use of `$` and `!` are associated with a higher likelihood that the email is spam.
+
+</font>
+
+##### **(b)** Using `ggplot2` graphics, construct a single plot showing histograms of the estimated spam probabilities.  Specify `fill = as.factor(spam.logit$y)` so that your plot colours the observations with `is.spam = 1` differently from those with `is.spam = 0`.  Does logistic regression appear to do a good job of separating spam from not spam?
+
+```{r}
+ggplot(spam.train, aes(is.spam, fill = as.factor(spam.logit$y))) + geom_histogram(binwidth = 1)
+
+```
+
+<font color="#157515">
+
+- Yes, it seems the logistic regression does a perfect job of classifying.
+
+</font>
+
+##### **(c)** What is the prevalence of spam in the training data?  What is the prevalence of spam in the test data?  Using a probability cutoff of 0.5, construct a confusion matrix for both the training data and test data.  You will need to use the `predict()` function appropriately to get probability estimates for your test data.  Look into the `type` argument of `predict.glm()` to see how to do this.  
+
+##### Calculate the misclassification rate for both the test data and training data.  Is this a good misclassification rate, relative to the prevalence of spam in the data?  
+
+#Training Set
+```{r}
+table(spam.train$is.spam)
+```
+
+```{r}
+spam.train.results <- predict(spam.logit, spam.train, type="response")
+spam.train.results <- ifelse(spam.train.results > 0.5,1,0)
+summary(spam.train.results)
+
+spam.train.confusion <- table(spam.train.results, spam.train$is.spam)
+spam.train.confusion
+
+```
+<font color="#157515">
+Training set Misclassification rate: `r ((70+90)/(70+90+1777+1128))*100`%
+This seems to be a fairly low misclassifiation rate.
+</font>
+
+#Test Set
+```{r}
+table(spam.test$is.spam)
+```
+
+```{r}
+spam.test.results <- predict(spam.logit, spam.test, type="response")
+spam.test.results <- ifelse(spam.test.results > 0.5,1,0)
+summary(spam.test.results)
+
+spam.test.confusion <- table(spam.test.results, spam.test$is.spam)
+spam.test.confusion
+
+```
+<font color="#157515">
+Test set Misclassification rate: `r ((39+51)/(39+51+902+544))*100`%
+This seems to be a fairly low misclassifiation rate.
+</font>
+
+##### **(d)** The code below constructs an additive formula for fitting an additive model with degree of freedom 5 smoothing splines for every input.  Supply this formula to the `gam` command to fit a logistic additive model to the Training data.  (Be sure that you are fitting a LOGISTIC additive model.)  Call this fit `spam.gam`.
+
+##### Use the `plot()` command to display the fitted splines for each term.  You should colour the lines 'ForestGreen'.  You should also use the `par(mfrow = ...)` command to set up a grid with 15 rows and 4 columns for the purpose of plotting.  Does it look like many of the fits are highly non-linear?
+
+```{r, fig.height = 40, fig.width = 8}
+spam.formula <- formula(paste("is.spam ~ ", paste("s(", varinfo[,1], ", 4)", sep = "", collapse= " + ")))
+
+spam.gam<- gam(spam.formula, family = binomial, data=spam.train)
+
+plot(spam.gam, color = 'ForestGreen') + par(mfrow = 15)
+```
+
+<font color="#157515">
+
+- It seems as though most of them are highly non-linear.
+</font>
+
+##### **(e)**  Using a probability cutoff of 0.5, construct a confusion matrix to show how the logistic additive model performs on the test data.  Calculate the misclassification rate.  Compare this to the Test misclassification rate of the standard logistic regression model.  
+
+```{r}
+gam.spam.test <- predict(spam.gam, spam.test, type="response")
+gam.spam.test <- ifelse(gam.spam.test > 0.5,1,0)
+summary(gam.spam.test)
+
+gam.test.confusion <- table(gam.spam.test, spam.test$is.spam)
+gam.test.confusion
+```
+
+<font color="#157515">
+
+Test set Misclassification rate with logistic GAM: `r ((38+46)/(38+46+895+557))*100`%
+The misclassification rates are fairly similar.
+
+</font>

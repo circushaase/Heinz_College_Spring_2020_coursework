@@ -1,0 +1,788 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\Lara\Documents\Econo2\hw4\hw4_log.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}25 Apr 2020, 16:25:21
+{txt}
+{com}. 
+. use "lowbirth.dta", clear
+{txt}
+{com}. 
+. reg lowbrth afdcprc lphypc lbedspc lpcinc lpopul i.county i.year
+
+{txt}      Source {c |}       SS           df       MS      Number of obs   ={res}       100
+{txt}{hline 13}{c +}{hline 34}   F(55, 44)       = {res}    70.98
+{txt}       Model {c |} {res} 133.104961        55   2.4200902   {txt}Prob > F        ={res}    0.0000
+{txt}    Residual {c |} {res} 1.50013382        44   .03409395   {txt}R-squared       ={res}    0.9889
+{txt}{hline 13}{c +}{hline 34}   Adj R-squared   ={res}    0.9749
+{txt}       Total {c |} {res} 134.605095        99  1.35964742   {txt}Root MSE        =   {res} .18465
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 1}     lowbrth{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}afdcprc {c |}{col 14}{res}{space 2}-.1760763{col 26}{space 2} .0903733{col 37}{space 1}   -1.95{col 46}{space 3}0.058{col 54}{space 4}-.3582116{col 67}{space 3}  .006059
+{txt}{space 6}lphypc {c |}{col 14}{res}{space 2} 5.894509{col 26}{space 2} 2.816689{col 37}{space 1}    2.09{col 46}{space 3}0.042{col 54}{space 4} .2178452{col 67}{space 3} 11.57117
+{txt}{space 5}lbedspc {c |}{col 14}{res}{space 2}-1.576195{col 26}{space 2} .8852111{col 37}{space 1}   -1.78{col 46}{space 3}0.082{col 54}{space 4}-3.360221{col 67}{space 3} .2078308
+{txt}{space 6}lpcinc {c |}{col 14}{res}{space 2}-.8455268{col 26}{space 2} 1.356773{col 37}{space 1}   -0.62{col 46}{space 3}0.536{col 54}{space 4}-3.579924{col 67}{space 3}  1.88887
+{txt}{space 6}lpopul {c |}{col 14}{res}{space 2} 3.441116{col 26}{space 2} 2.872175{col 37}{space 1}    1.20{col 46}{space 3}0.237{col 54}{space 4}-2.347372{col 67}{space 3} 9.229604
+{txt}{space 12} {c |}
+{space 6}county {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-8.129407{col 26}{space 2} 2.295061{col 37}{space 1}   -3.54{col 46}{space 3}0.001{col 54}{space 4} -12.7548{col 67}{space 3}-3.504015
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-4.063061{col 26}{space 2} .9604394{col 37}{space 1}   -4.23{col 46}{space 3}0.000{col 54}{space 4}-5.998699{col 67}{space 3}-2.127422
+{txt}{space 10}4  {c |}{col 14}{res}{space 2}-1.491532{col 26}{space 2} .6400166{col 37}{space 1}   -2.33{col 46}{space 3}0.024{col 54}{space 4}-2.781401{col 67}{space 3}-.2016634
+{txt}{space 10}5  {c |}{col 14}{res}{space 2}  -.02479{col 26}{space 2} 2.348241{col 37}{space 1}   -0.01{col 46}{space 3}0.992{col 54}{space 4}-4.757359{col 67}{space 3} 4.707779
+{txt}{space 10}6  {c |}{col 14}{res}{space 2} -2.81477{col 26}{space 2} 1.115026{col 37}{space 1}   -2.52{col 46}{space 3}0.015{col 54}{space 4}-5.061958{col 67}{space 3}-.5675823
+{txt}{space 10}7  {c |}{col 14}{res}{space 2}-5.840162{col 26}{space 2} 2.173992{col 37}{space 1}   -2.69{col 46}{space 3}0.010{col 54}{space 4}-10.22156{col 67}{space 3}-1.458768
+{txt}{space 10}8  {c |}{col 14}{res}{space 2}-6.986195{col 26}{space 2} 2.189801{col 37}{space 1}   -3.19{col 46}{space 3}0.003{col 54}{space 4}-11.39945{col 67}{space 3} -2.57294
+{txt}{space 10}9  {c |}{col 14}{res}{space 2} .2952137{col 26}{space 2} 1.427513{col 37}{space 1}    0.21{col 46}{space 3}0.837{col 54}{space 4}-2.581749{col 67}{space 3} 3.172176
+{txt}{space 9}10  {c |}{col 14}{res}{space 2} .9885621{col 26}{space 2} .6236365{col 37}{space 1}    1.59{col 46}{space 3}0.120{col 54}{space 4}-.2682946{col 67}{space 3} 2.245419
+{txt}{space 9}11  {c |}{col 14}{res}{space 2}-7.139243{col 26}{space 2} 2.179158{col 37}{space 1}   -3.28{col 46}{space 3}0.002{col 54}{space 4}-11.53105{col 67}{space 3}-2.747438
+{txt}{space 9}12  {c |}{col 14}{res}{space 2}-5.509837{col 26}{space 2} 1.681341{col 37}{space 1}   -3.28{col 46}{space 3}0.002{col 54}{space 4}-8.898357{col 67}{space 3}-2.121316
+{txt}{space 9}13  {c |}{col 14}{res}{space 2} .5404552{col 26}{space 2} 1.459342{col 37}{space 1}    0.37{col 46}{space 3}0.713{col 54}{space 4}-2.400656{col 67}{space 3} 3.481566
+{txt}{space 9}14  {c |}{col 14}{res}{space 2} -1.09742{col 26}{space 2} .4132427{col 37}{space 1}   -2.66{col 46}{space 3}0.011{col 54}{space 4}-1.930256{col 67}{space 3}-.2645846
+{txt}{space 9}15  {c |}{col 14}{res}{space 2}-3.338295{col 26}{space 2} .4186916{col 37}{space 1}   -7.97{col 46}{space 3}0.000{col 54}{space 4}-4.182113{col 67}{space 3}-2.494478
+{txt}{space 9}16  {c |}{col 14}{res}{space 2}-3.447964{col 26}{space 2} .6118978{col 37}{space 1}   -5.63{col 46}{space 3}0.000{col 54}{space 4}-4.681163{col 67}{space 3}-2.214764
+{txt}{space 9}17  {c |}{col 14}{res}{space 2}-1.759983{col 26}{space 2} .3693672{col 37}{space 1}   -4.76{col 46}{space 3}0.000{col 54}{space 4}-2.504393{col 67}{space 3}-1.015572
+{txt}{space 9}18  {c |}{col 14}{res}{space 2} .3091829{col 26}{space 2} .5848325{col 37}{space 1}    0.53{col 46}{space 3}0.600{col 54}{space 4}-.8694695{col 67}{space 3} 1.487835
+{txt}{space 9}19  {c |}{col 14}{res}{space 2}-6.602336{col 26}{space 2} 1.475999{col 37}{space 1}   -4.47{col 46}{space 3}0.000{col 54}{space 4}-9.577017{col 67}{space 3}-3.627655
+{txt}{space 9}20  {c |}{col 14}{res}{space 2}-4.485343{col 26}{space 2} 2.318293{col 37}{space 1}   -1.93{col 46}{space 3}0.059{col 54}{space 4}-9.157556{col 67}{space 3} .1868697
+{txt}{space 9}21  {c |}{col 14}{res}{space 2}-5.345787{col 26}{space 2} 2.255882{col 37}{space 1}   -2.37{col 46}{space 3}0.022{col 54}{space 4}-9.892218{col 67}{space 3}-.7993558
+{txt}{space 9}22  {c |}{col 14}{res}{space 2} .7117727{col 26}{space 2} 1.068533{col 37}{space 1}    0.67{col 46}{space 3}0.509{col 54}{space 4}-1.441715{col 67}{space 3}  2.86526
+{txt}{space 9}23  {c |}{col 14}{res}{space 2}-4.655914{col 26}{space 2} 1.036072{col 37}{space 1}   -4.49{col 46}{space 3}0.000{col 54}{space 4} -6.74398{col 67}{space 3}-2.567848
+{txt}{space 9}24  {c |}{col 14}{res}{space 2} 1.753777{col 26}{space 2} .8212603{col 37}{space 1}    2.14{col 46}{space 3}0.038{col 54}{space 4} .0986361{col 67}{space 3} 3.408919
+{txt}{space 9}25  {c |}{col 14}{res}{space 2}-1.594353{col 26}{space 2} .7361207{col 37}{space 1}   -2.17{col 46}{space 3}0.036{col 54}{space 4}-3.077907{col 67}{space 3}-.1107997
+{txt}{space 9}26  {c |}{col 14}{res}{space 2}-6.163828{col 26}{space 2} 1.647696{col 37}{space 1}   -3.74{col 46}{space 3}0.001{col 54}{space 4}-9.484542{col 67}{space 3}-2.843115
+{txt}{space 9}27  {c |}{col 14}{res}{space 2}-5.406194{col 26}{space 2}   .97024{col 37}{space 1}   -5.57{col 46}{space 3}0.000{col 54}{space 4}-7.361585{col 67}{space 3}-3.450804
+{txt}{space 9}28  {c |}{col 14}{res}{space 2}-5.197631{col 26}{space 2} 1.604927{col 37}{space 1}   -3.24{col 46}{space 3}0.002{col 54}{space 4}-8.432149{col 67}{space 3}-1.963113
+{txt}{space 9}29  {c |}{col 14}{res}{space 2}-8.275586{col 26}{space 2} 1.743792{col 37}{space 1}   -4.75{col 46}{space 3}0.000{col 54}{space 4}-11.78997{col 67}{space 3}-4.761205
+{txt}{space 9}30  {c |}{col 14}{res}{space 2}-1.866046{col 26}{space 2} 1.630092{col 37}{space 1}   -1.14{col 46}{space 3}0.259{col 54}{space 4} -5.15128{col 67}{space 3} 1.419187
+{txt}{space 9}31  {c |}{col 14}{res}{space 2}-4.525078{col 26}{space 2} 1.352045{col 37}{space 1}   -3.35{col 46}{space 3}0.002{col 54}{space 4}-7.249946{col 67}{space 3}-1.800209
+{txt}{space 9}32  {c |}{col 14}{res}{space 2}-.2853575{col 26}{space 2} 2.499995{col 37}{space 1}   -0.11{col 46}{space 3}0.910{col 54}{space 4}-5.323766{col 67}{space 3} 4.753051
+{txt}{space 9}33  {c |}{col 14}{res}{space 2}-.4383366{col 26}{space 2} .7265961{col 37}{space 1}   -0.60{col 46}{space 3}0.549{col 54}{space 4}-1.902695{col 67}{space 3} 1.026022
+{txt}{space 9}34  {c |}{col 14}{res}{space 2}-7.535544{col 26}{space 2} 1.775703{col 37}{space 1}   -4.24{col 46}{space 3}0.000{col 54}{space 4}-11.11424{col 67}{space 3}-3.956848
+{txt}{space 9}35  {c |}{col 14}{res}{space 2} .1136548{col 26}{space 2} 1.200262{col 37}{space 1}    0.09{col 46}{space 3}0.925{col 54}{space 4}-2.305314{col 67}{space 3} 2.532623
+{txt}{space 9}36  {c |}{col 14}{res}{space 2}-2.013613{col 26}{space 2} .4090088{col 37}{space 1}   -4.92{col 46}{space 3}0.000{col 54}{space 4}-2.837916{col 67}{space 3} -1.18931
+{txt}{space 9}37  {c |}{col 14}{res}{space 2}-6.069975{col 26}{space 2} 1.174573{col 37}{space 1}   -5.17{col 46}{space 3}0.000{col 54}{space 4}-8.437171{col 67}{space 3}-3.702779
+{txt}{space 9}38  {c |}{col 14}{res}{space 2}-.5126973{col 26}{space 2} 1.586627{col 37}{space 1}   -0.32{col 46}{space 3}0.748{col 54}{space 4}-3.710333{col 67}{space 3} 2.684939
+{txt}{space 9}39  {c |}{col 14}{res}{space 2}-8.226808{col 26}{space 2} 2.236336{col 37}{space 1}   -3.68{col 46}{space 3}0.001{col 54}{space 4}-12.73385{col 67}{space 3}-3.719769
+{txt}{space 9}40  {c |}{col 14}{res}{space 2}-.5452724{col 26}{space 2} .4622961{col 37}{space 1}   -1.18{col 46}{space 3}0.245{col 54}{space 4}-1.476969{col 67}{space 3} .3864242
+{txt}{space 9}41  {c |}{col 14}{res}{space 2}-6.342898{col 26}{space 2} 1.692954{col 37}{space 1}   -3.75{col 46}{space 3}0.001{col 54}{space 4}-9.754824{col 67}{space 3}-2.930973
+{txt}{space 9}42  {c |}{col 14}{res}{space 2}-.5709899{col 26}{space 2} .6461477{col 37}{space 1}   -0.88{col 46}{space 3}0.382{col 54}{space 4}-1.873215{col 67}{space 3} .7312351
+{txt}{space 9}43  {c |}{col 14}{res}{space 2}   1.3658{col 26}{space 2} 1.458269{col 37}{space 1}    0.94{col 46}{space 3}0.354{col 54}{space 4}-1.573147{col 67}{space 3} 4.304747
+{txt}{space 9}44  {c |}{col 14}{res}{space 2}-6.584192{col 26}{space 2} 1.438308{col 37}{space 1}   -4.58{col 46}{space 3}0.000{col 54}{space 4}-9.482912{col 67}{space 3}-3.685473
+{txt}{space 9}45  {c |}{col 14}{res}{space 2}-10.78512{col 26}{space 2} 2.776523{col 37}{space 1}   -3.88{col 46}{space 3}0.000{col 54}{space 4}-16.38084{col 67}{space 3}-5.189409
+{txt}{space 9}46  {c |}{col 14}{res}{space 2}-2.101626{col 26}{space 2} 1.080374{col 37}{space 1}   -1.95{col 46}{space 3}0.058{col 54}{space 4}-4.278976{col 67}{space 3} .0757252
+{txt}{space 9}47  {c |}{col 14}{res}{space 2} -4.71512{col 26}{space 2} 1.181334{col 37}{space 1}   -3.99{col 46}{space 3}0.000{col 54}{space 4}-7.095942{col 67}{space 3}-2.334298
+{txt}{space 9}48  {c |}{col 14}{res}{space 2}-3.033909{col 26}{space 2} .9587698{col 37}{space 1}   -3.16{col 46}{space 3}0.003{col 54}{space 4}-4.966182{col 67}{space 3}-1.101635
+{txt}{space 9}49  {c |}{col 14}{res}{space 2}-2.912446{col 26}{space 2} .6814152{col 37}{space 1}   -4.27{col 46}{space 3}0.000{col 54}{space 4}-4.285748{col 67}{space 3}-1.539143
+{txt}{space 9}50  {c |}{col 14}{res}{space 2}-5.036552{col 26}{space 2} 2.173863{col 37}{space 1}   -2.32{col 46}{space 3}0.025{col 54}{space 4}-9.417685{col 67}{space 3}-.6554197
+{txt}{space 12} {c |}
+{space 8}year {c |}
+{space 7}1990  {c |}{col 14}{res}{space 2} .1060158{col 26}{space 2} .3090664{col 37}{space 1}    0.34{col 46}{space 3}0.733{col 54}{space 4}-.5168667{col 67}{space 3} .7288983
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}-.6659436{col 26}{space 2} 22.48698{col 37}{space 1}   -0.03{col 46}{space 3}0.977{col 54}{space 4}-45.98548{col 67}{space 3} 44.65359
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. reg lowbrth afdcprc lphypc lbedspc lpcinc lpopul i.county i.year, robust
+
+{txt}Linear regression                               Number of obs     = {res}       100
+                                                {txt}F(55, 44)         =  {res}  2370.33
+                                                {txt}Prob > F          = {res}    0.0000
+                                                {txt}R-squared         = {res}    0.9889
+                                                {txt}Root MSE          =    {res} .18465
+
+{txt}{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}     lowbrth{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}afdcprc {c |}{col 14}{res}{space 2}-.1760763{col 26}{space 2} .0767568{col 37}{space 1}   -2.29{col 46}{space 3}0.027{col 54}{space 4}-.3307695{col 67}{space 3} -.021383
+{txt}{space 6}lphypc {c |}{col 14}{res}{space 2} 5.894509{col 26}{space 2} 3.098646{col 37}{space 1}    1.90{col 46}{space 3}0.064{col 54}{space 4}-.3504018{col 67}{space 3} 12.13942
+{txt}{space 5}lbedspc {c |}{col 14}{res}{space 2}-1.576195{col 26}{space 2} 1.236188{col 37}{space 1}   -1.28{col 46}{space 3}0.209{col 54}{space 4}-4.067567{col 67}{space 3} .9151775
+{txt}{space 6}lpcinc {c |}{col 14}{res}{space 2}-.8455268{col 26}{space 2} 1.484034{col 37}{space 1}   -0.57{col 46}{space 3}0.572{col 54}{space 4}  -3.8364{col 67}{space 3} 2.145346
+{txt}{space 6}lpopul {c |}{col 14}{res}{space 2} 3.441116{col 26}{space 2} 2.687705{col 37}{space 1}    1.28{col 46}{space 3}0.207{col 54}{space 4}-1.975596{col 67}{space 3} 8.857829
+{txt}{space 12} {c |}
+{space 6}county {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-8.129407{col 26}{space 2} 3.401999{col 37}{space 1}   -2.39{col 46}{space 3}0.021{col 54}{space 4}-14.98569{col 67}{space 3}-1.273129
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-4.063061{col 26}{space 2} 1.294656{col 37}{space 1}   -3.14{col 46}{space 3}0.003{col 54}{space 4}-6.672269{col 67}{space 3}-1.453853
+{txt}{space 10}4  {c |}{col 14}{res}{space 2}-1.491532{col 26}{space 2} .8779392{col 37}{space 1}   -1.70{col 46}{space 3}0.096{col 54}{space 4}-3.260902{col 67}{space 3} .2778382
+{txt}{space 10}5  {c |}{col 14}{res}{space 2}  -.02479{col 26}{space 2} 2.884797{col 37}{space 1}   -0.01{col 46}{space 3}0.993{col 54}{space 4}-5.838717{col 67}{space 3} 5.789137
+{txt}{space 10}6  {c |}{col 14}{res}{space 2} -2.81477{col 26}{space 2} 1.490371{col 37}{space 1}   -1.89{col 46}{space 3}0.066{col 54}{space 4}-5.818416{col 67}{space 3} .1888754
+{txt}{space 10}7  {c |}{col 14}{res}{space 2}-5.840162{col 26}{space 2} 2.690564{col 37}{space 1}   -2.17{col 46}{space 3}0.035{col 54}{space 4}-11.26264{col 67}{space 3}-.4176872
+{txt}{space 10}8  {c |}{col 14}{res}{space 2}-6.986195{col 26}{space 2} 3.494381{col 37}{space 1}   -2.00{col 46}{space 3}0.052{col 54}{space 4}-14.02866{col 67}{space 3} .0562667
+{txt}{space 10}9  {c |}{col 14}{res}{space 2} .2952137{col 26}{space 2} 1.690894{col 37}{space 1}    0.17{col 46}{space 3}0.862{col 54}{space 4}-3.112558{col 67}{space 3} 3.702986
+{txt}{space 9}10  {c |}{col 14}{res}{space 2} .9885621{col 26}{space 2} .7728826{col 37}{space 1}    1.28{col 46}{space 3}0.208{col 54}{space 4}-.5690804{col 67}{space 3} 2.546205
+{txt}{space 9}11  {c |}{col 14}{res}{space 2}-7.139243{col 26}{space 2} 3.337846{col 37}{space 1}   -2.14{col 46}{space 3}0.038{col 54}{space 4}-13.86623{col 67}{space 3}-.4122565
+{txt}{space 9}12  {c |}{col 14}{res}{space 2}-5.509837{col 26}{space 2} 2.185067{col 37}{space 1}   -2.52{col 46}{space 3}0.015{col 54}{space 4} -9.91355{col 67}{space 3}-1.106123
+{txt}{space 9}13  {c |}{col 14}{res}{space 2} .5404552{col 26}{space 2} 1.665359{col 37}{space 1}    0.32{col 46}{space 3}0.747{col 54}{space 4}-2.815856{col 67}{space 3} 3.896766
+{txt}{space 9}14  {c |}{col 14}{res}{space 2} -1.09742{col 26}{space 2} .5700963{col 37}{space 1}   -1.92{col 46}{space 3}0.061{col 54}{space 4}-2.246374{col 67}{space 3} .0515332
+{txt}{space 9}15  {c |}{col 14}{res}{space 2}-3.338295{col 26}{space 2} .5132306{col 37}{space 1}   -6.50{col 46}{space 3}0.000{col 54}{space 4}-4.372643{col 67}{space 3}-2.303947
+{txt}{space 9}16  {c |}{col 14}{res}{space 2}-3.447964{col 26}{space 2} .9485595{col 37}{space 1}   -3.63{col 46}{space 3}0.001{col 54}{space 4} -5.35966{col 67}{space 3}-1.536267
+{txt}{space 9}17  {c |}{col 14}{res}{space 2}-1.759983{col 26}{space 2} .4707596{col 37}{space 1}   -3.74{col 46}{space 3}0.001{col 54}{space 4}-2.708736{col 67}{space 3}-.8112291
+{txt}{space 9}18  {c |}{col 14}{res}{space 2} .3091829{col 26}{space 2} .5941688{col 37}{space 1}    0.52{col 46}{space 3}0.605{col 54}{space 4}-.8882856{col 67}{space 3} 1.506651
+{txt}{space 9}19  {c |}{col 14}{res}{space 2}-6.602336{col 26}{space 2} 2.320295{col 37}{space 1}   -2.85{col 46}{space 3}0.007{col 54}{space 4}-11.27858{col 67}{space 3}-1.926088
+{txt}{space 9}20  {c |}{col 14}{res}{space 2}-4.485343{col 26}{space 2} 2.629575{col 37}{space 1}   -1.71{col 46}{space 3}0.095{col 54}{space 4}-9.784904{col 67}{space 3} .8142181
+{txt}{space 9}21  {c |}{col 14}{res}{space 2}-5.345787{col 26}{space 2} 2.331047{col 37}{space 1}   -2.29{col 46}{space 3}0.027{col 54}{space 4} -10.0437{col 67}{space 3}-.6478707
+{txt}{space 9}22  {c |}{col 14}{res}{space 2} .7117727{col 26}{space 2} 1.328405{col 37}{space 1}    0.54{col 46}{space 3}0.595{col 54}{space 4}-1.965452{col 67}{space 3} 3.388997
+{txt}{space 9}23  {c |}{col 14}{res}{space 2}-4.655914{col 26}{space 2} 1.128002{col 37}{space 1}   -4.13{col 46}{space 3}0.000{col 54}{space 4}-6.929252{col 67}{space 3}-2.382575
+{txt}{space 9}24  {c |}{col 14}{res}{space 2} 1.753777{col 26}{space 2} .8503334{col 37}{space 1}    2.06{col 46}{space 3}0.045{col 54}{space 4}  .040043{col 67}{space 3} 3.467512
+{txt}{space 9}25  {c |}{col 14}{res}{space 2}-1.594353{col 26}{space 2} .7214351{col 37}{space 1}   -2.21{col 46}{space 3}0.032{col 54}{space 4} -3.04831{col 67}{space 3}-.1403965
+{txt}{space 9}26  {c |}{col 14}{res}{space 2}-6.163828{col 26}{space 2} 2.523582{col 37}{space 1}   -2.44{col 46}{space 3}0.019{col 54}{space 4}-11.24977{col 67}{space 3}-1.077882
+{txt}{space 9}27  {c |}{col 14}{res}{space 2}-5.406194{col 26}{space 2} 1.579803{col 37}{space 1}   -3.42{col 46}{space 3}0.001{col 54}{space 4}-8.590077{col 67}{space 3}-2.222311
+{txt}{space 9}28  {c |}{col 14}{res}{space 2}-5.197631{col 26}{space 2} 2.462869{col 37}{space 1}   -2.11{col 46}{space 3}0.041{col 54}{space 4}-10.16122{col 67}{space 3}-.2340445
+{txt}{space 9}29  {c |}{col 14}{res}{space 2}-8.275586{col 26}{space 2} 2.741642{col 37}{space 1}   -3.02{col 46}{space 3}0.004{col 54}{space 4}  -13.801{col 67}{space 3}-2.750169
+{txt}{space 9}30  {c |}{col 14}{res}{space 2}-1.866046{col 26}{space 2}  1.73154{col 37}{space 1}   -1.08{col 46}{space 3}0.287{col 54}{space 4}-5.355736{col 67}{space 3} 1.623643
+{txt}{space 9}31  {c |}{col 14}{res}{space 2}-4.525078{col 26}{space 2} 2.062834{col 37}{space 1}   -2.19{col 46}{space 3}0.034{col 54}{space 4}-8.682447{col 67}{space 3}-.3677085
+{txt}{space 9}32  {c |}{col 14}{res}{space 2}-.2853575{col 26}{space 2} 2.535032{col 37}{space 1}   -0.11{col 46}{space 3}0.911{col 54}{space 4}-5.394378{col 67}{space 3} 4.823663
+{txt}{space 9}33  {c |}{col 14}{res}{space 2}-.4383366{col 26}{space 2} .8097041{col 37}{space 1}   -0.54{col 46}{space 3}0.591{col 54}{space 4}-2.070188{col 67}{space 3} 1.193515
+{txt}{space 9}34  {c |}{col 14}{res}{space 2}-7.535544{col 26}{space 2} 2.873688{col 37}{space 1}   -2.62{col 46}{space 3}0.012{col 54}{space 4}-13.32708{col 67}{space 3}-1.744006
+{txt}{space 9}35  {c |}{col 14}{res}{space 2} .1136548{col 26}{space 2} 1.457485{col 37}{space 1}    0.08{col 46}{space 3}0.938{col 54}{space 4}-2.823714{col 67}{space 3} 3.051024
+{txt}{space 9}36  {c |}{col 14}{res}{space 2}-2.013613{col 26}{space 2} .4704261{col 37}{space 1}   -4.28{col 46}{space 3}0.000{col 54}{space 4}-2.961694{col 67}{space 3}-1.065531
+{txt}{space 9}37  {c |}{col 14}{res}{space 2}-6.069975{col 26}{space 2} 1.681759{col 37}{space 1}   -3.61{col 46}{space 3}0.001{col 54}{space 4}-9.459338{col 67}{space 3}-2.680611
+{txt}{space 9}38  {c |}{col 14}{res}{space 2}-.5126973{col 26}{space 2} 1.684043{col 37}{space 1}   -0.30{col 46}{space 3}0.762{col 54}{space 4}-3.906662{col 67}{space 3} 2.881267
+{txt}{space 9}39  {c |}{col 14}{res}{space 2}-8.226808{col 26}{space 2} 3.433616{col 37}{space 1}   -2.40{col 46}{space 3}0.021{col 54}{space 4}-15.14681{col 67}{space 3}-1.306809
+{txt}{space 9}40  {c |}{col 14}{res}{space 2}-.5452724{col 26}{space 2} .6147855{col 37}{space 1}   -0.89{col 46}{space 3}0.380{col 54}{space 4}-1.784291{col 67}{space 3} .6937464
+{txt}{space 9}41  {c |}{col 14}{res}{space 2}-6.342898{col 26}{space 2} 2.524643{col 37}{space 1}   -2.51{col 46}{space 3}0.016{col 54}{space 4}-11.43098{col 67}{space 3}-1.254815
+{txt}{space 9}42  {c |}{col 14}{res}{space 2}-.5709899{col 26}{space 2} .6000098{col 37}{space 1}   -0.95{col 46}{space 3}0.346{col 54}{space 4} -1.78023{col 67}{space 3} .6382503
+{txt}{space 9}43  {c |}{col 14}{res}{space 2}   1.3658{col 26}{space 2} 2.107013{col 37}{space 1}    0.65{col 46}{space 3}0.520{col 54}{space 4}-2.880605{col 67}{space 3} 5.612205
+{txt}{space 9}44  {c |}{col 14}{res}{space 2}-6.584192{col 26}{space 2} 2.132298{col 37}{space 1}   -3.09{col 46}{space 3}0.003{col 54}{space 4}-10.88156{col 67}{space 3}-2.286828
+{txt}{space 9}45  {c |}{col 14}{res}{space 2}-10.78512{col 26}{space 2} 4.348781{col 37}{space 1}   -2.48{col 46}{space 3}0.017{col 54}{space 4}-19.54952{col 67}{space 3}-2.020731
+{txt}{space 9}46  {c |}{col 14}{res}{space 2}-2.101626{col 26}{space 2} 1.146197{col 37}{space 1}   -1.83{col 46}{space 3}0.073{col 54}{space 4}-4.411633{col 67}{space 3} .2083818
+{txt}{space 9}47  {c |}{col 14}{res}{space 2} -4.71512{col 26}{space 2} 1.485005{col 37}{space 1}   -3.18{col 46}{space 3}0.003{col 54}{space 4}-7.707951{col 67}{space 3} -1.72229
+{txt}{space 9}48  {c |}{col 14}{res}{space 2}-3.033909{col 26}{space 2} 1.439464{col 37}{space 1}   -2.11{col 46}{space 3}0.041{col 54}{space 4}-5.934957{col 67}{space 3}-.1328599
+{txt}{space 9}49  {c |}{col 14}{res}{space 2}-2.912446{col 26}{space 2} .7489318{col 37}{space 1}   -3.89{col 46}{space 3}0.000{col 54}{space 4}-4.421818{col 67}{space 3}-1.403073
+{txt}{space 9}50  {c |}{col 14}{res}{space 2}-5.036552{col 26}{space 2} 3.226304{col 37}{space 1}   -1.56{col 46}{space 3}0.126{col 54}{space 4}-11.53874{col 67}{space 3} 1.465636
+{txt}{space 12} {c |}
+{space 8}year {c |}
+{space 7}1990  {c |}{col 14}{res}{space 2} .1060158{col 26}{space 2} .3675668{col 37}{space 1}    0.29{col 46}{space 3}0.774{col 54}{space 4}-.6347664{col 67}{space 3} .8467981
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}-.6659436{col 26}{space 2} 26.09097{col 37}{space 1}   -0.03{col 46}{space 3}0.980{col 54}{space 4}-53.24884{col 67}{space 3} 51.91695
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. reg lowbrth afdcprc lphypc lbedspc lpcinc lpopul i.county i.year, cluster(county)
+
+{txt}Linear regression                               Number of obs     = {res}       100
+                                                {txt}{help j_robustsingular:F(5, 49) }         =  {res}        .
+                                                {txt}Prob > F          = {res}         .
+                                                {txt}R-squared         = {res}    0.9889
+                                                {txt}Root MSE          =    {res} .18465
+
+{txt}{ralign 78:(Std. Err. adjusted for {res:50} clusters in county)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}     lowbrth{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}afdcprc {c |}{col 14}{res}{space 2}-.1760763{col 26}{space 2}  .109103{col 37}{space 1}   -1.61{col 46}{space 3}0.113{col 54}{space 4} -.395327{col 67}{space 3} .0431744
+{txt}{space 6}lphypc {c |}{col 14}{res}{space 2} 5.894509{col 26}{space 2} 4.404449{col 37}{space 1}    1.34{col 46}{space 3}0.187{col 54}{space 4}-2.956562{col 67}{space 3} 14.74558
+{txt}{space 5}lbedspc {c |}{col 14}{res}{space 2}-1.576195{col 26}{space 2}  1.75713{col 37}{space 1}   -0.90{col 46}{space 3}0.374{col 54}{space 4} -5.10728{col 67}{space 3}  1.95489
+{txt}{space 6}lpcinc {c |}{col 14}{res}{space 2}-.8455268{col 26}{space 2} 2.109421{col 37}{space 1}   -0.40{col 46}{space 3}0.690{col 54}{space 4}-5.084567{col 67}{space 3} 3.393514
+{txt}{space 6}lpopul {c |}{col 14}{res}{space 2} 3.441116{col 26}{space 2} 3.820332{col 37}{space 1}    0.90{col 46}{space 3}0.372{col 54}{space 4}-4.236128{col 67}{space 3} 11.11836
+{txt}{space 12} {c |}
+{space 6}county {c |}
+{space 10}2  {c |}{col 14}{res}{space 2}-8.129407{col 26}{space 2}   4.8326{col 37}{space 1}   -1.68{col 46}{space 3}0.099{col 54}{space 4}-17.84088{col 67}{space 3} 1.582066
+{txt}{space 10}3  {c |}{col 14}{res}{space 2}-4.063061{col 26}{space 2} 1.835128{col 37}{space 1}   -2.21{col 46}{space 3}0.032{col 54}{space 4}-7.750888{col 67}{space 3}-.3752334
+{txt}{space 10}4  {c |}{col 14}{res}{space 2}-1.491532{col 26}{space 2} 1.212791{col 37}{space 1}   -1.23{col 46}{space 3}0.225{col 54}{space 4}-3.928728{col 67}{space 3} .9456636
+{txt}{space 10}5  {c |}{col 14}{res}{space 2}  -.02479{col 26}{space 2} 4.098225{col 37}{space 1}   -0.01{col 46}{space 3}0.995{col 54}{space 4}-8.260481{col 67}{space 3} 8.210901
+{txt}{space 10}6  {c |}{col 14}{res}{space 2} -2.81477{col 26}{space 2} 2.114302{col 37}{space 1}   -1.33{col 46}{space 3}0.189{col 54}{space 4} -7.06362{col 67}{space 3} 1.434079
+{txt}{space 10}7  {c |}{col 14}{res}{space 2}-5.840162{col 26}{space 2} 3.818293{col 37}{space 1}   -1.53{col 46}{space 3}0.133{col 54}{space 4}-13.51331{col 67}{space 3} 1.832985
+{txt}{space 10}8  {c |}{col 14}{res}{space 2}-6.986195{col 26}{space 2}  4.95043{col 37}{space 1}   -1.41{col 46}{space 3}0.164{col 54}{space 4}-16.93446{col 67}{space 3} 2.962067
+{txt}{space 10}9  {c |}{col 14}{res}{space 2} .2952137{col 26}{space 2} 2.397216{col 37}{space 1}    0.12{col 46}{space 3}0.902{col 54}{space 4}-4.522173{col 67}{space 3}   5.1126
+{txt}{space 9}10  {c |}{col 14}{res}{space 2} .9885621{col 26}{space 2} 1.033225{col 37}{space 1}    0.96{col 46}{space 3}0.343{col 54}{space 4}-1.087781{col 67}{space 3} 3.064906
+{txt}{space 9}11  {c |}{col 14}{res}{space 2}-7.139243{col 26}{space 2} 4.742129{col 37}{space 1}   -1.51{col 46}{space 3}0.139{col 54}{space 4}-16.66891{col 67}{space 3} 2.390422
+{txt}{space 9}12  {c |}{col 14}{res}{space 2}-5.509837{col 26}{space 2} 3.102844{col 37}{space 1}   -1.78{col 46}{space 3}0.082{col 54}{space 4}-11.74524{col 67}{space 3} .7255621
+{txt}{space 9}13  {c |}{col 14}{res}{space 2} .5404552{col 26}{space 2} 2.363669{col 37}{space 1}    0.23{col 46}{space 3}0.820{col 54}{space 4}-4.209515{col 67}{space 3} 5.290425
+{txt}{space 9}14  {c |}{col 14}{res}{space 2} -1.09742{col 26}{space 2} .7928226{col 37}{space 1}   -1.38{col 46}{space 3}0.173{col 54}{space 4}-2.690657{col 67}{space 3} .4958161
+{txt}{space 9}15  {c |}{col 14}{res}{space 2}-3.338295{col 26}{space 2} .7196737{col 37}{space 1}   -4.64{col 46}{space 3}0.000{col 54}{space 4}-4.784533{col 67}{space 3}-1.892057
+{txt}{space 9}16  {c |}{col 14}{res}{space 2}-3.447964{col 26}{space 2} 1.315072{col 37}{space 1}   -2.62{col 46}{space 3}0.012{col 54}{space 4}-6.090699{col 67}{space 3}-.8052278
+{txt}{space 9}17  {c |}{col 14}{res}{space 2}-1.759983{col 26}{space 2} .6087709{col 37}{space 1}   -2.89{col 46}{space 3}0.006{col 54}{space 4}-2.983354{col 67}{space 3}-.5366117
+{txt}{space 9}18  {c |}{col 14}{res}{space 2} .3091829{col 26}{space 2} .7984105{col 37}{space 1}    0.39{col 46}{space 3}0.700{col 54}{space 4}-1.295283{col 67}{space 3} 1.913649
+{txt}{space 9}19  {c |}{col 14}{res}{space 2}-6.602336{col 26}{space 2} 3.282615{col 37}{space 1}   -2.01{col 46}{space 3}0.050{col 54}{space 4}  -13.199{col 67}{space 3} -.005674
+{txt}{space 9}20  {c |}{col 14}{res}{space 2}-4.485343{col 26}{space 2} 3.735222{col 37}{space 1}   -1.20{col 46}{space 3}0.236{col 54}{space 4}-11.99155{col 67}{space 3} 3.020867
+{txt}{space 9}21  {c |}{col 14}{res}{space 2}-5.345787{col 26}{space 2} 3.310876{col 37}{space 1}   -1.61{col 46}{space 3}0.113{col 54}{space 4}-11.99924{col 67}{space 3} 1.307668
+{txt}{space 9}22  {c |}{col 14}{res}{space 2} .7117727{col 26}{space 2} 1.874463{col 37}{space 1}    0.38{col 46}{space 3}0.706{col 54}{space 4}-3.055101{col 67}{space 3} 4.478646
+{txt}{space 9}23  {c |}{col 14}{res}{space 2}-4.655914{col 26}{space 2} 1.597387{col 37}{space 1}   -2.91{col 46}{space 3}0.005{col 54}{space 4}-7.865984{col 67}{space 3}-1.445843
+{txt}{space 9}24  {c |}{col 14}{res}{space 2} 1.753777{col 26}{space 2} 1.182056{col 37}{space 1}    1.48{col 46}{space 3}0.144{col 54}{space 4}-.6216533{col 67}{space 3} 4.129208
+{txt}{space 9}25  {c |}{col 14}{res}{space 2}-1.594353{col 26}{space 2} 1.017895{col 37}{space 1}   -1.57{col 46}{space 3}0.124{col 54}{space 4}-3.639891{col 67}{space 3}  .451184
+{txt}{space 9}26  {c |}{col 14}{res}{space 2}-6.163828{col 26}{space 2} 3.572215{col 37}{space 1}   -1.73{col 46}{space 3}0.091{col 54}{space 4}-13.34246{col 67}{space 3} 1.014806
+{txt}{space 9}27  {c |}{col 14}{res}{space 2}-5.406194{col 26}{space 2} 2.224925{col 37}{space 1}   -2.43{col 46}{space 3}0.019{col 54}{space 4}-9.877347{col 67}{space 3} -.935041
+{txt}{space 9}28  {c |}{col 14}{res}{space 2}-5.197631{col 26}{space 2} 3.471403{col 37}{space 1}   -1.50{col 46}{space 3}0.141{col 54}{space 4}-12.17368{col 67}{space 3} 1.778415
+{txt}{space 9}29  {c |}{col 14}{res}{space 2}-8.275586{col 26}{space 2} 3.892787{col 37}{space 1}   -2.13{col 46}{space 3}0.039{col 54}{space 4}-16.09843{col 67}{space 3}-.4527383
+{txt}{space 9}30  {c |}{col 14}{res}{space 2}-1.866046{col 26}{space 2} 2.450095{col 37}{space 1}   -0.76{col 46}{space 3}0.450{col 54}{space 4}-6.789696{col 67}{space 3} 3.057604
+{txt}{space 9}31  {c |}{col 14}{res}{space 2}-4.525078{col 26}{space 2} 2.929246{col 37}{space 1}   -1.54{col 46}{space 3}0.129{col 54}{space 4}-10.41162{col 67}{space 3} 1.361463
+{txt}{space 9}32  {c |}{col 14}{res}{space 2}-.2853575{col 26}{space 2} 3.599405{col 37}{space 1}   -0.08{col 46}{space 3}0.937{col 54}{space 4}-7.518633{col 67}{space 3} 6.947918
+{txt}{space 9}33  {c |}{col 14}{res}{space 2}-.4383366{col 26}{space 2} 1.143354{col 37}{space 1}   -0.38{col 46}{space 3}0.703{col 54}{space 4}-2.735993{col 67}{space 3}  1.85932
+{txt}{space 9}34  {c |}{col 14}{res}{space 2}-7.535544{col 26}{space 2} 4.075017{col 37}{space 1}   -1.85{col 46}{space 3}0.070{col 54}{space 4} -15.7246{col 67}{space 3} .6535092
+{txt}{space 9}35  {c |}{col 14}{res}{space 2} .1136548{col 26}{space 2} 2.057425{col 37}{space 1}    0.06{col 46}{space 3}0.956{col 54}{space 4}-4.020895{col 67}{space 3} 4.248205
+{txt}{space 9}36  {c |}{col 14}{res}{space 2}-2.013613{col 26}{space 2} .6518548{col 37}{space 1}   -3.09{col 46}{space 3}0.003{col 54}{space 4}-3.323564{col 67}{space 3}-.7036614
+{txt}{space 9}37  {c |}{col 14}{res}{space 2}-6.069975{col 26}{space 2} 2.362297{col 37}{space 1}   -2.57{col 46}{space 3}0.013{col 54}{space 4}-10.81719{col 67}{space 3}-1.322761
+{txt}{space 9}38  {c |}{col 14}{res}{space 2}-.5126973{col 26}{space 2} 2.390622{col 37}{space 1}   -0.21{col 46}{space 3}0.831{col 54}{space 4}-5.316832{col 67}{space 3} 4.291437
+{txt}{space 9}39  {c |}{col 14}{res}{space 2}-8.226808{col 26}{space 2} 4.878995{col 37}{space 1}   -1.69{col 46}{space 3}0.098{col 54}{space 4}-18.03152{col 67}{space 3}   1.5779
+{txt}{space 9}40  {c |}{col 14}{res}{space 2}-.5452724{col 26}{space 2} .8637945{col 37}{space 1}   -0.63{col 46}{space 3}0.531{col 54}{space 4}-2.281132{col 67}{space 3} 1.190588
+{txt}{space 9}41  {c |}{col 14}{res}{space 2}-6.342898{col 26}{space 2} 3.584327{col 37}{space 1}   -1.77{col 46}{space 3}0.083{col 54}{space 4}-13.54587{col 67}{space 3} .8600758
+{txt}{space 9}42  {c |}{col 14}{res}{space 2}-.5709899{col 26}{space 2} .8440846{col 37}{space 1}   -0.68{col 46}{space 3}0.502{col 54}{space 4}-2.267241{col 67}{space 3} 1.125262
+{txt}{space 9}43  {c |}{col 14}{res}{space 2}   1.3658{col 26}{space 2} 2.992532{col 37}{space 1}    0.46{col 46}{space 3}0.650{col 54}{space 4}-4.647917{col 67}{space 3} 7.379517
+{txt}{space 9}44  {c |}{col 14}{res}{space 2}-6.584192{col 26}{space 2} 3.022999{col 37}{space 1}   -2.18{col 46}{space 3}0.034{col 54}{space 4}-12.65914{col 67}{space 3}-.5092488
+{txt}{space 9}45  {c |}{col 14}{res}{space 2}-10.78512{col 26}{space 2} 6.179703{col 37}{space 1}   -1.75{col 46}{space 3}0.087{col 54}{space 4} -23.2037{col 67}{space 3} 1.633453
+{txt}{space 9}46  {c |}{col 14}{res}{space 2}-2.101626{col 26}{space 2} 1.623374{col 37}{space 1}   -1.29{col 46}{space 3}0.202{col 54}{space 4}-5.363917{col 67}{space 3} 1.160666
+{txt}{space 9}47  {c |}{col 14}{res}{space 2} -4.71512{col 26}{space 2} 2.105877{col 37}{space 1}   -2.24{col 46}{space 3}0.030{col 54}{space 4}-8.947039{col 67}{space 3}-.4832017
+{txt}{space 9}48  {c |}{col 14}{res}{space 2}-3.033909{col 26}{space 2} 2.038883{col 37}{space 1}   -1.49{col 46}{space 3}0.143{col 54}{space 4}-7.131197{col 67}{space 3}  1.06338
+{txt}{space 9}49  {c |}{col 14}{res}{space 2}-2.912446{col 26}{space 2} 1.057178{col 37}{space 1}   -2.75{col 46}{space 3}0.008{col 54}{space 4}-5.036924{col 67}{space 3}-.7879672
+{txt}{space 9}50  {c |}{col 14}{res}{space 2}-5.036552{col 26}{space 2} 4.572759{col 37}{space 1}   -1.10{col 46}{space 3}0.276{col 54}{space 4}-14.22586{col 67}{space 3}  4.15275
+{txt}{space 12} {c |}
+{space 8}year {c |}
+{space 7}1990  {c |}{col 14}{res}{space 2} .1060158{col 26}{space 2} .5224634{col 37}{space 1}    0.20{col 46}{space 3}0.840{col 54}{space 4}-.9439137{col 67}{space 3} 1.155945
+{txt}{space 12} {c |}
+{space 7}_cons {c |}{col 14}{res}{space 2}-.6659436{col 26}{space 2} 37.08579{col 37}{space 1}   -0.02{col 46}{space 3}0.986{col 54}{space 4}-75.19263{col 67}{space 3} 73.86075
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. ***** Part 1C
+. 
+. gen dum_year = 0
+{txt}
+{com}. replace dum_year = 1 if year == 1990
+{txt}(50 real changes made)
+
+{com}. sort county
+{txt}
+{com}. * Calculate mean by county *
+. foreach x in lowbrth afdcprc lphypc lbedspc lpcinc lpopul dum_year{c -(}
+{txt}  2{com}.         by county: egen `x'_mean = mean(`x')
+{txt}  3{com}. {c )-}
+{txt}
+{com}. * Demean variables *
+. foreach x in lowbrth afdcprc lphypc lbedspc lpcinc lpopul dum_year{c -(}
+{txt}  2{com}.         gen `x'_dm = `x' - `x'_mean
+{txt}  3{com}. {c )-}
+{txt}
+{com}. 
+. reg *_dm,  vce(cluster county)
+
+{txt}Linear regression                               Number of obs     = {res}       100
+                                                {txt}F(6, 49)          =  {res}     5.62
+                                                {txt}Prob > F          = {res}    0.0002
+                                                {txt}R-squared         = {res}    0.3839
+                                                {txt}Root MSE          =    {res} .12701
+
+{txt}{ralign 78:(Std. Err. adjusted for {res:50} clusters in county)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}  lowbrth_dm{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 2}afdcprc_dm {c |}{col 14}{res}{space 2}-.1760763{col 26}{space 2}  .075045{col 37}{space 1}   -2.35{col 46}{space 3}0.023{col 54}{space 4}-.3268848{col 67}{space 3}-.0252678
+{txt}{space 3}lphypc_dm {c |}{col 14}{res}{space 2} 5.894509{col 26}{space 2} 3.029538{col 37}{space 1}    1.95{col 46}{space 3}0.057{col 54}{space 4}-.1935754{col 67}{space 3} 11.98259
+{txt}{space 2}lbedspc_dm {c |}{col 14}{res}{space 2}-1.576195{col 26}{space 2} 1.208617{col 37}{space 1}   -1.30{col 46}{space 3}0.198{col 54}{space 4}-4.005002{col 67}{space 3} .8526125
+{txt}{space 3}lpcinc_dm {c |}{col 14}{res}{space 2}-.8455268{col 26}{space 2} 1.450936{col 37}{space 1}   -0.58{col 46}{space 3}0.563{col 54}{space 4}-3.761291{col 67}{space 3} 2.070238
+{txt}{space 3}lpopul_dm {c |}{col 14}{res}{space 2} 3.441116{col 26}{space 2} 2.627762{col 37}{space 1}    1.31{col 46}{space 3}0.196{col 54}{space 4}-1.839568{col 67}{space 3} 8.721801
+{txt}{space 1}dum_year_dm {c |}{col 14}{res}{space 2} .1060158{col 26}{space 2} .3593691{col 37}{space 1}    0.30{col 46}{space 3}0.769{col 54}{space 4}-.6161634{col 67}{space 3}  .828195
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{res}{txt}
+{com}. 
+. 
+. 
+. ****** Part 1E
+. 
+. gen afdc2 = afdcprc^2
+{txt}
+{com}. 
+. xtset county year
+{res}{txt}{col 8}panel variable:  {res}county (strongly balanced)
+{txt}{col 9}time variable:  {res}{col 25}year, 1987 to 1990, but with gaps
+{txt}{col 17}delta:  {res}1 unit
+{txt}
+{com}. 
+. xtreg lowbrth afdcprc afdc2 lphypc lbedspc lpcinc lpopul dum_year, fe cluster(county)
+{res}
+{txt}Fixed-effects (within) regression{col 49}Number of obs{col 67}={col 69}{res}       100
+{txt}Group variable: {res}county{txt}{col 49}Number of groups{col 67}={col 69}{res}        50
+
+{txt}R-sq:{col 49}Obs per group:
+     within  = {res}0.4052{col 63}{txt}min{col 67}={col 69}{res}         2
+{txt}     between = {res}0.1671{col 63}{txt}avg{col 67}={col 69}{res}       2.0
+{txt}     overall = {res}0.1606{col 63}{txt}max{col 67}={col 69}{res}         2
+
+{txt}{col 49}F({res}7{txt},{res}49{txt}){col 67}={col 70}{res}     5.43
+{txt}corr(u_i, Xb){col 16}= {res}-0.9291{txt}{col 49}Prob > F{col 67}={col 73}{res}0.0001
+
+{txt}{ralign 78:(Std. Err. adjusted for {res:50} clusters in county)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}     lowbrth{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 5}afdcprc {c |}{col 14}{res}{space 2} -.503505{col 26}{space 2}  .253827{col 37}{space 1}   -1.98{col 46}{space 3}0.053{col 54}{space 4}-1.013589{col 67}{space 3} .0065794
+{txt}{space 7}afdc2 {c |}{col 14}{res}{space 2} .0396095{col 26}{space 2} .0308564{col 37}{space 1}    1.28{col 46}{space 3}0.205{col 54}{space 4}-.0223988{col 67}{space 3} .1016177
+{txt}{space 6}lphypc {c |}{col 14}{res}{space 2} 6.620886{col 26}{space 2} 3.350661{col 37}{space 1}    1.98{col 46}{space 3}0.054{col 54}{space 4}-.1125194{col 67}{space 3} 13.35429
+{txt}{space 5}lbedspc {c |}{col 14}{res}{space 2}-1.407963{col 26}{space 2} 1.306162{col 37}{space 1}   -1.08{col 46}{space 3}0.286{col 54}{space 4}-4.032794{col 67}{space 3} 1.216867
+{txt}{space 6}lpcinc {c |}{col 14}{res}{space 2}-.9987863{col 26}{space 2} 1.498077{col 37}{space 1}   -0.67{col 46}{space 3}0.508{col 54}{space 4}-4.009285{col 67}{space 3} 2.011712
+{txt}{space 6}lpopul {c |}{col 14}{res}{space 2} 4.429027{col 26}{space 2} 2.842555{col 37}{space 1}    1.56{col 46}{space 3}0.126{col 54}{space 4}-1.283302{col 67}{space 3} 10.14136
+{txt}{space 4}dum_year {c |}{col 14}{res}{space 2} .1245915{col 26}{space 2} .3757599{col 37}{space 1}    0.33{col 46}{space 3}0.742{col 54}{space 4}-.6305264{col 67}{space 3} .8797093
+{txt}{space 7}_cons {c |}{col 14}{res}{space 2}-6.947183{col 26}{space 2} 27.31169{col 37}{space 1}   -0.25{col 46}{space 3}0.800{col 54}{space 4}-61.83209{col 67}{space 3} 47.93772
+{txt}{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+     sigma_u {c |} {res} 2.8840079
+     {txt}sigma_e {c |} {res} .18353475
+         {txt}rho {c |} {res} .99596644{txt}   (fraction of variance due to u_i)
+{hline 13}{c BT}{hline 64}
+
+{com}. 
+. 
+. ******Q2******
+. 
+. use "curfews_class.dta", clear
+{txt}(UNIFORM CRIME REPORTING PROGRAM [UNITED STATES]: ARRESTS BY AGE, SEX, AND RACE F)
+
+{com}. 
+. gen E = 0
+{txt}
+{com}. replace E = 1 if t==0
+{txt}(53 real changes made)
+
+{com}. 
+. egen cityid=group(city) 
+{txt}
+{com}. 
+. tsset cityid year
+{res}{txt}{col 8}panel variable:  {res}cityid (unbalanced)
+{txt}{col 9}time variable:  {res}{col 25}year, 80 to 104
+{txt}{col 17}delta:  {res}1 unit
+{txt}
+{com}. 
+. gen Emin= year-enacted <=-5
+{txt}
+{com}. gen Emax= year-enacted >=5
+{txt}
+{com}. 
+. xi: areg lnarrests Emin l(-4/-2).E E l(1/4).E Emax i.year, abs(city) cluster(city)
+{txt}i.year{col 19}_Iyear_80-104{col 39}(naturally coded; _Iyear_80 omitted)
+{p 0 6 2}note: _Iyear_81 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_82 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_83 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_100 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_101 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_102 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_103 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_104 omitted because of collinearity{p_end}
+{res}
+{txt}Linear regression, absorbing indicators{col 49}Number of obs{col 67}= {res}       890
+{txt}Absorbed variable: {bf:city}{col 49}No. of categories{col 67}= {res}        53
+{txt}{col 49}F({res}  26{txt},{res}     52{txt}){col 67}= {res}     10.35
+{txt}{col 49}Prob > F{col 67}= {res}    0.0000
+{txt}{col 49}R-squared{col 67}= {res}    0.8792
+{txt}{col 49}Adj R-squared{col 67}= {res}    0.8676
+{txt}{col 49}Root MSE{col 67}= {res}    0.2608
+
+{txt}{ralign 78:(Std. Err. adjusted for {res:53} clusters in city)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}   lnarrests{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}Emin {c |}{col 14}{res}{space 2} .0067197{col 26}{space 2} .1102081{col 37}{space 1}    0.06{col 46}{space 3}0.952{col 54}{space 4}-.2144291{col 67}{space 3} .2278686
+{txt}{space 12} {c |}
+{space 11}E {c |}
+{space 9}F4. {c |}{col 14}{res}{space 2} .0385105{col 26}{space 2} .0750585{col 37}{space 1}    0.51{col 46}{space 3}0.610{col 54}{space 4}-.1121055{col 67}{space 3} .1891265
+{txt}{space 9}F3. {c |}{col 14}{res}{space 2} .0462845{col 26}{space 2} .0599628{col 37}{space 1}    0.77{col 46}{space 3}0.444{col 54}{space 4}-.0740396{col 67}{space 3} .1666086
+{txt}{space 9}F2. {c |}{col 14}{res}{space 2} .0060545{col 26}{space 2} .0391672{col 37}{space 1}    0.15{col 46}{space 3}0.878{col 54}{space 4}-.0725401{col 67}{space 3} .0846492
+{txt}{space 9}--. {c |}{col 14}{res}{space 2}-.0703697{col 26}{space 2} .0337418{col 37}{space 1}   -2.09{col 46}{space 3}0.042{col 54}{space 4}-.1380775{col 67}{space 3}-.0026619
+{txt}{space 9}L1. {c |}{col 14}{res}{space 2}-.1401267{col 26}{space 2} .0499852{col 37}{space 1}   -2.80{col 46}{space 3}0.007{col 54}{space 4}-.2404294{col 67}{space 3}-.0398241
+{txt}{space 9}L2. {c |}{col 14}{res}{space 2}-.1592849{col 26}{space 2} .0772518{col 37}{space 1}   -2.06{col 46}{space 3}0.044{col 54}{space 4} -.314302{col 67}{space 3}-.0042678
+{txt}{space 9}L3. {c |}{col 14}{res}{space 2}-.1542395{col 26}{space 2} .0785757{col 37}{space 1}   -1.96{col 46}{space 3}0.055{col 54}{space 4}-.3119131{col 67}{space 3} .0034341
+{txt}{space 9}L4. {c |}{col 14}{res}{space 2}-.1593464{col 26}{space 2} .0973851{col 37}{space 1}   -1.64{col 46}{space 3}0.108{col 54}{space 4}-.3547638{col 67}{space 3}  .036071
+{txt}{space 12} {c |}
+{space 8}Emax {c |}{col 14}{res}{space 2}-.2555173{col 26}{space 2}  .121244{col 37}{space 1}   -2.11{col 46}{space 3}0.040{col 54}{space 4}-.4988113{col 67}{space 3}-.0122234
+{txt}{space 3}_Iyear_81 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_82 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_83 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_84 {c |}{col 14}{res}{space 2} .1852766{col 26}{space 2} .2080203{col 37}{space 1}    0.89{col 46}{space 3}0.377{col 54}{space 4}-.2321467{col 67}{space 3} .6026998
+{txt}{space 3}_Iyear_85 {c |}{col 14}{res}{space 2} .2911013{col 26}{space 2} .2009289{col 37}{space 1}    1.45{col 46}{space 3}0.153{col 54}{space 4}-.1120921{col 67}{space 3} .6942948
+{txt}{space 3}_Iyear_86 {c |}{col 14}{res}{space 2} .2742315{col 26}{space 2} .2023105{col 37}{space 1}    1.36{col 46}{space 3}0.181{col 54}{space 4}-.1317341{col 67}{space 3} .6801972
+{txt}{space 3}_Iyear_87 {c |}{col 14}{res}{space 2} .2309786{col 26}{space 2} .2079634{col 37}{space 1}    1.11{col 46}{space 3}0.272{col 54}{space 4}-.1863304{col 67}{space 3} .6482877
+{txt}{space 3}_Iyear_88 {c |}{col 14}{res}{space 2} .2446843{col 26}{space 2} .1747288{col 37}{space 1}    1.40{col 46}{space 3}0.167{col 54}{space 4}-.1059347{col 67}{space 3} .5953034
+{txt}{space 3}_Iyear_89 {c |}{col 14}{res}{space 2} .3362199{col 26}{space 2} .1622981{col 37}{space 1}    2.07{col 46}{space 3}0.043{col 54}{space 4}  .010545{col 67}{space 3} .6618948
+{txt}{space 3}_Iyear_90 {c |}{col 14}{res}{space 2} .3626878{col 26}{space 2} .1413242{col 37}{space 1}    2.57{col 46}{space 3}0.013{col 54}{space 4} .0791001{col 67}{space 3} .6462756
+{txt}{space 3}_Iyear_91 {c |}{col 14}{res}{space 2} .4100951{col 26}{space 2} .1193865{col 37}{space 1}    3.44{col 46}{space 3}0.001{col 54}{space 4} .1705286{col 67}{space 3} .6496616
+{txt}{space 3}_Iyear_92 {c |}{col 14}{res}{space 2} .4338945{col 26}{space 2} .0997588{col 37}{space 1}    4.35{col 46}{space 3}0.000{col 54}{space 4} .2337139{col 67}{space 3} .6340752
+{txt}{space 3}_Iyear_93 {c |}{col 14}{res}{space 2} .4256492{col 26}{space 2} .0862554{col 37}{space 1}    4.93{col 46}{space 3}0.000{col 54}{space 4} .2525652{col 67}{space 3} .5987333
+{txt}{space 3}_Iyear_94 {c |}{col 14}{res}{space 2}  .506797{col 26}{space 2} .0776378{col 37}{space 1}    6.53{col 46}{space 3}0.000{col 54}{space 4} .3510054{col 67}{space 3} .6625886
+{txt}{space 3}_Iyear_95 {c |}{col 14}{res}{space 2} .4963928{col 26}{space 2} .0677483{col 37}{space 1}    7.33{col 46}{space 3}0.000{col 54}{space 4} .3604458{col 67}{space 3} .6323397
+{txt}{space 3}_Iyear_96 {c |}{col 14}{res}{space 2} .4012297{col 26}{space 2} .0677765{col 37}{space 1}    5.92{col 46}{space 3}0.000{col 54}{space 4} .2652261{col 67}{space 3} .5372332
+{txt}{space 3}_Iyear_97 {c |}{col 14}{res}{space 2} .3630436{col 26}{space 2} .0511624{col 37}{space 1}    7.10{col 46}{space 3}0.000{col 54}{space 4} .2603787{col 67}{space 3} .4657084
+{txt}{space 3}_Iyear_98 {c |}{col 14}{res}{space 2} .2285196{col 26}{space 2} .0461964{col 37}{space 1}    4.95{col 46}{space 3}0.000{col 54}{space 4} .1358197{col 67}{space 3} .3212195
+{txt}{space 3}_Iyear_99 {c |}{col 14}{res}{space 2} .0220071{col 26}{space 2} .0465335{col 37}{space 1}    0.47{col 46}{space 3}0.638{col 54}{space 4}-.0713691{col 67}{space 3} .1153834
+{txt}{space 2}_Iyear_100 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_101 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_102 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_103 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_104 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2}  6.61235{col 26}{space 2} .1149185{col 37}{space 1}   57.54{col 46}{space 3}0.000{col 54}{space 4} 6.381749{col 67}{space 3} 6.842951
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. 
+. mat coeff=[_b[Emin]\  _b[F4.]\ _b[F3.]\ _b[F2.]\ 0\ _b[E]\ _b[L1.]\ _b[L2.]\ _b[L3.]\ _b[L4.]\  _b[Emax]]
+{txt}
+{com}. mat se=[_se[Emin]\  _se[F4.]\ _se[F3.]\ _se[F2.]\ 0\ _se[E]\ _se[L1.]\ _se[L2.]\ _se[L3.]\ _se[L4.]\  _se[Emax]]
+{txt}
+{com}. mat upper=coeff+((1.96)*se)
+{txt}
+{com}. mat lower=coeff-((1.96)*se)
+{txt}
+{com}. mat x=(-5\-4\-3\-2\-1\0 \1 \2 \3 \4 \5)
+{txt}
+{com}. mat data=[coeff,upper,lower,x]
+{txt}
+{com}. svmat data
+{txt}
+{com}. rename data1 coeff
+{res}{txt}
+{com}. rename data2 upper
+{res}{txt}
+{com}. rename data3 lower
+{res}{txt}
+{com}. rename data4 x
+{res}{txt}
+{com}. twoway (line coeff x, lpattern(solid) lcolor(black)) (line upper x, lpattern(dash)  lcolor(black)) (line lower x, lpattern(dash) lcolor(black)), xline(0, lpattern(shortdash)) legend(off)xtitle(Years Since Enactment) title("Estimates and 95% Confidence Interval")  xlabel(-5 -4 -3 -2 -1 0 1 2 3 4 5)
+{res}{txt}
+{com}. graph export event_study_fig1.pdf, replace
+{txt}(file event_study_fig1.pdf written in PDF format)
+
+{com}. 
+. **********
+. use "curfews_class.dta", clear
+{txt}(UNIFORM CRIME REPORTING PROGRAM [UNITED STATES]: ARRESTS BY AGE, SEX, AND RACE F)
+
+{com}. gen E = 0
+{txt}
+{com}. replace E = 1 if t==0
+{txt}(53 real changes made)
+
+{com}. egen cityid=group(city) 
+{txt}
+{com}. tsset cityid year
+{res}{txt}{col 8}panel variable:  {res}cityid (unbalanced)
+{txt}{col 9}time variable:  {res}{col 25}year, 80 to 104
+{txt}{col 17}delta:  {res}1 unit
+{txt}
+{com}. gen Emin= year-enacted <=-3
+{txt}
+{com}. gen Emax= year-enacted >=3
+{txt}
+{com}. xi: areg lnarrests Emin l(-3/-2).E E l(1/3).E Emax i.year, abs(city) cluster(city)
+{txt}i.year{col 19}_Iyear_80-104{col 39}(naturally coded; _Iyear_80 omitted)
+{p 0 6 2}note: _Iyear_81 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_82 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_101 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_102 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_103 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_104 omitted because of collinearity{p_end}
+{res}
+{txt}Linear regression, absorbing indicators{col 49}Number of obs{col 67}= {res}       995
+{txt}Absorbed variable: {bf:city}{col 49}No. of categories{col 67}= {res}        53
+{txt}{col 49}F({res}  26{txt},{res}     52{txt}){col 67}= {res}     10.96
+{txt}{col 49}Prob > F{col 67}= {res}    0.0000
+{txt}{col 49}R-squared{col 67}= {res}    0.8680
+{txt}{col 49}Adj R-squared{col 67}= {res}    0.8568
+{txt}{col 49}Root MSE{col 67}= {res}    0.2774
+
+{txt}{ralign 78:(Std. Err. adjusted for {res:53} clusters in city)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}   lnarrests{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}Emin {c |}{col 14}{res}{space 2} -.000806{col 26}{space 2} .0827244{col 37}{space 1}   -0.01{col 46}{space 3}0.992{col 54}{space 4}-.1668046{col 67}{space 3} .1651926
+{txt}{space 12} {c |}
+{space 11}E {c |}
+{space 9}F3. {c |}{col 14}{res}{space 2} .0394914{col 26}{space 2}   .05777{col 37}{space 1}    0.68{col 46}{space 3}0.497{col 54}{space 4}-.0764327{col 67}{space 3} .1554154
+{txt}{space 9}F2. {c |}{col 14}{res}{space 2}-.0101564{col 26}{space 2} .0360271{col 37}{space 1}   -0.28{col 46}{space 3}0.779{col 54}{space 4}  -.08245{col 67}{space 3} .0621372
+{txt}{space 9}--. {c |}{col 14}{res}{space 2}-.0681567{col 26}{space 2} .0321233{col 37}{space 1}   -2.12{col 46}{space 3}0.039{col 54}{space 4}-.1326168{col 67}{space 3}-.0036966
+{txt}{space 9}L1. {c |}{col 14}{res}{space 2}  -.13426{col 26}{space 2} .0460754{col 37}{space 1}   -2.91{col 46}{space 3}0.005{col 54}{space 4}-.2267171{col 67}{space 3}-.0418029
+{txt}{space 9}L2. {c |}{col 14}{res}{space 2}-.1440567{col 26}{space 2} .0684712{col 37}{space 1}   -2.10{col 46}{space 3}0.040{col 54}{space 4}-.2814543{col 67}{space 3}-.0066591
+{txt}{space 9}L3. {c |}{col 14}{res}{space 2} .0639814{col 26}{space 2}  .043399{col 37}{space 1}    1.47{col 46}{space 3}0.146{col 54}{space 4} -.023105{col 67}{space 3} .1510679
+{txt}{space 12} {c |}
+{space 8}Emax {c |}{col 14}{res}{space 2} -.202703{col 26}{space 2} .0950408{col 37}{space 1}   -2.13{col 46}{space 3}0.038{col 54}{space 4}-.3934164{col 67}{space 3}-.0119897
+{txt}{space 3}_Iyear_81 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_82 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_83 {c |}{col 14}{res}{space 2} .4210162{col 26}{space 2} .1642538{col 37}{space 1}    2.56{col 46}{space 3}0.013{col 54}{space 4} .0914168{col 67}{space 3} .7506155
+{txt}{space 3}_Iyear_84 {c |}{col 14}{res}{space 2}  .416645{col 26}{space 2} .1617176{col 37}{space 1}    2.58{col 46}{space 3}0.013{col 54}{space 4}  .092135{col 67}{space 3} .7411551
+{txt}{space 3}_Iyear_85 {c |}{col 14}{res}{space 2} .5097153{col 26}{space 2} .1553533{col 37}{space 1}    3.28{col 46}{space 3}0.002{col 54}{space 4} .1979761{col 67}{space 3} .8214544
+{txt}{space 3}_Iyear_86 {c |}{col 14}{res}{space 2} .4937085{col 26}{space 2} .1594283{col 37}{space 1}    3.10{col 46}{space 3}0.003{col 54}{space 4} .1737922{col 67}{space 3} .8136247
+{txt}{space 3}_Iyear_87 {c |}{col 14}{res}{space 2} .4453996{col 26}{space 2} .1685107{col 37}{space 1}    2.64{col 46}{space 3}0.011{col 54}{space 4} .1072583{col 67}{space 3}  .783541
+{txt}{space 3}_Iyear_88 {c |}{col 14}{res}{space 2} .4667001{col 26}{space 2} .1415228{col 37}{space 1}    3.30{col 46}{space 3}0.002{col 54}{space 4} .1827138{col 67}{space 3} .7506863
+{txt}{space 3}_Iyear_89 {c |}{col 14}{res}{space 2} .5559322{col 26}{space 2} .1321398{col 37}{space 1}    4.21{col 46}{space 3}0.000{col 54}{space 4} .2907743{col 67}{space 3} .8210901
+{txt}{space 3}_Iyear_90 {c |}{col 14}{res}{space 2}  .585186{col 26}{space 2} .1221739{col 37}{space 1}    4.79{col 46}{space 3}0.000{col 54}{space 4} .3400261{col 67}{space 3} .8303458
+{txt}{space 3}_Iyear_91 {c |}{col 14}{res}{space 2} .6258703{col 26}{space 2} .1064235{col 37}{space 1}    5.88{col 46}{space 3}0.000{col 54}{space 4}  .412316{col 67}{space 3} .8394246
+{txt}{space 3}_Iyear_92 {c |}{col 14}{res}{space 2} .6463703{col 26}{space 2} .0883662{col 37}{space 1}    7.31{col 46}{space 3}0.000{col 54}{space 4} .4690506{col 67}{space 3} .8236901
+{txt}{space 3}_Iyear_93 {c |}{col 14}{res}{space 2}  .631865{col 26}{space 2} .0790218{col 37}{space 1}    8.00{col 46}{space 3}0.000{col 54}{space 4} .4732961{col 67}{space 3} .7904338
+{txt}{space 3}_Iyear_94 {c |}{col 14}{res}{space 2} .7079693{col 26}{space 2} .0763286{col 37}{space 1}    9.28{col 46}{space 3}0.000{col 54}{space 4} .5548047{col 67}{space 3} .8611338
+{txt}{space 3}_Iyear_95 {c |}{col 14}{res}{space 2} .6933473{col 26}{space 2} .0736497{col 37}{space 1}    9.41{col 46}{space 3}0.000{col 54}{space 4} .5455583{col 67}{space 3} .8411363
+{txt}{space 3}_Iyear_96 {c |}{col 14}{res}{space 2} .5959437{col 26}{space 2} .0756503{col 37}{space 1}    7.88{col 46}{space 3}0.000{col 54}{space 4} .4441402{col 67}{space 3} .7477472
+{txt}{space 3}_Iyear_97 {c |}{col 14}{res}{space 2} .5460182{col 26}{space 2} .0636727{col 37}{space 1}    8.58{col 46}{space 3}0.000{col 54}{space 4} .4182496{col 67}{space 3} .6737868
+{txt}{space 3}_Iyear_98 {c |}{col 14}{res}{space 2}  .418129{col 26}{space 2} .0585967{col 37}{space 1}    7.14{col 46}{space 3}0.000{col 54}{space 4} .3005461{col 67}{space 3}  .535712
+{txt}{space 3}_Iyear_99 {c |}{col 14}{res}{space 2}  .195634{col 26}{space 2} .0563317{col 37}{space 1}    3.47{col 46}{space 3}0.001{col 54}{space 4} .0825961{col 67}{space 3} .3086718
+{txt}{space 2}_Iyear_100 {c |}{col 14}{res}{space 2} .1624533{col 26}{space 2}  .034786{col 37}{space 1}    4.67{col 46}{space 3}0.000{col 54}{space 4}   .09265{col 67}{space 3} .2322566
+{txt}{space 2}_Iyear_101 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_102 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_103 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_104 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} 6.401579{col 26}{space 2} .0936067{col 37}{space 1}   68.39{col 46}{space 3}0.000{col 54}{space 4} 6.213743{col 67}{space 3} 6.589414
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. 
+. use "curfews_class.dta", clear
+{txt}(UNIFORM CRIME REPORTING PROGRAM [UNITED STATES]: ARRESTS BY AGE, SEX, AND RACE F)
+
+{com}. gen E = 0
+{txt}
+{com}. replace E = 1 if t==0
+{txt}(53 real changes made)
+
+{com}. egen cityid=group(city) 
+{txt}
+{com}. tsset cityid year
+{res}{txt}{col 8}panel variable:  {res}cityid (unbalanced)
+{txt}{col 9}time variable:  {res}{col 25}year, 80 to 104
+{txt}{col 17}delta:  {res}1 unit
+{txt}
+{com}. gen Emin= year-enacted <=-8
+{txt}
+{com}. gen Emax= year-enacted >=8
+{txt}
+{com}. xi: areg lnarrests Emin l(-8/-2).E E l(1/8).E Emax i.year, abs(city) cluster(city)
+{txt}i.year{col 19}_Iyear_80-104{col 39}(naturally coded; _Iyear_80 omitted)
+{p 0 6 2}note: _Iyear_81 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_82 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_83 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_84 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_85 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_86 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_87 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_96 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_97 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_98 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_99 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_100 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_101 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_102 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_103 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_104 omitted because of collinearity{p_end}
+{res}
+{txt}Linear regression, absorbing indicators{col 49}Number of obs{col 67}= {res}       469
+{txt}Absorbed variable: {bf:city}{col 49}No. of categories{col 67}= {res}        53
+{txt}{col 49}F({res}  26{txt},{res}     52{txt}){col 67}= {res}      4.84
+{txt}{col 49}Prob > F{col 67}= {res}    0.0000
+{txt}{col 49}R-squared{col 67}= {res}    0.9204
+{txt}{col 49}Adj R-squared{col 67}= {res}    0.9044
+{txt}{col 49}Root MSE{col 67}= {res}    0.2114
+
+{txt}{ralign 78:(Std. Err. adjusted for {res:53} clusters in city)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}   lnarrests{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}Emin {c |}{col 14}{res}{space 2}-1.488231{col 26}{space 2}   .42532{col 37}{space 1}   -3.50{col 46}{space 3}0.001{col 54}{space 4}-2.341698{col 67}{space 3}-.6347638
+{txt}{space 12} {c |}
+{space 11}E {c |}
+{space 9}F8. {c |}{col 14}{res}{space 2}  .519642{col 26}{space 2} .1345722{col 37}{space 1}    3.86{col 46}{space 3}0.000{col 54}{space 4} .2496032{col 67}{space 3} .7896809
+{txt}{space 9}F7. {c |}{col 14}{res}{space 2}-.8386986{col 26}{space 2} .2953366{col 37}{space 1}   -2.84{col 46}{space 3}0.006{col 54}{space 4}-1.431335{col 67}{space 3}-.2460623
+{txt}{space 9}F6. {c |}{col 14}{res}{space 2}-.5772265{col 26}{space 2} .2311826{col 37}{space 1}   -2.50{col 46}{space 3}0.016{col 54}{space 4}-1.041128{col 67}{space 3}-.1133247
+{txt}{space 9}F5. {c |}{col 14}{res}{space 2}-.4341995{col 26}{space 2} .1962559{col 37}{space 1}   -2.21{col 46}{space 3}0.031{col 54}{space 4}-.8280157{col 67}{space 3}-.0403832
+{txt}{space 9}F4. {c |}{col 14}{res}{space 2}-.2794023{col 26}{space 2} .1442147{col 37}{space 1}   -1.94{col 46}{space 3}0.058{col 54}{space 4}-.5687902{col 67}{space 3} .0099857
+{txt}{space 9}F3. {c |}{col 14}{res}{space 2}-.1816403{col 26}{space 2}  .107071{col 37}{space 1}   -1.70{col 46}{space 3}0.096{col 54}{space 4}-.3964939{col 67}{space 3} .0332134
+{txt}{space 9}F2. {c |}{col 14}{res}{space 2}-.1193545{col 26}{space 2} .0578467{col 37}{space 1}   -2.06{col 46}{space 3}0.044{col 54}{space 4}-.2354324{col 67}{space 3}-.0032767
+{txt}{space 9}--. {c |}{col 14}{res}{space 2} .0541049{col 26}{space 2}   .05992{col 37}{space 1}    0.90{col 46}{space 3}0.371{col 54}{space 4}-.0661334{col 67}{space 3} .1743433
+{txt}{space 9}L1. {c |}{col 14}{res}{space 2} .1077491{col 26}{space 2} .1078422{col 37}{space 1}    1.00{col 46}{space 3}0.322{col 54}{space 4}-.1086521{col 67}{space 3} .3241503
+{txt}{space 9}L2. {c |}{col 14}{res}{space 2}  .212421{col 26}{space 2} .1639207{col 37}{space 1}    1.30{col 46}{space 3}0.201{col 54}{space 4}  -.11651{col 67}{space 3}  .541352
+{txt}{space 9}L3. {c |}{col 14}{res}{space 2} .3147216{col 26}{space 2} .1964221{col 37}{space 1}    1.60{col 46}{space 3}0.115{col 54}{space 4}-.0794282{col 67}{space 3} .7088713
+{txt}{space 9}L4. {c |}{col 14}{res}{space 2} .4158056{col 26}{space 2} .2454492{col 37}{space 1}    1.69{col 46}{space 3}0.096{col 54}{space 4}-.0767243{col 67}{space 3} .9083355
+{txt}{space 9}L5. {c |}{col 14}{res}{space 2} .5290282{col 26}{space 2} .2994525{col 37}{space 1}    1.77{col 46}{space 3}0.083{col 54}{space 4}-.0718672{col 67}{space 3} 1.129924
+{txt}{space 9}L6. {c |}{col 14}{res}{space 2} .5572138{col 26}{space 2} .3556861{col 37}{space 1}    1.57{col 46}{space 3}0.123{col 54}{space 4}-.1565226{col 67}{space 3}  1.27095
+{txt}{space 9}L7. {c |}{col 14}{res}{space 2} .6237412{col 26}{space 2} .3790993{col 37}{space 1}    1.65{col 46}{space 3}0.106{col 54}{space 4}-.1369772{col 67}{space 3}  1.38446
+{txt}{space 9}L8. {c |}{col 14}{res}{space 2}-.2791975{col 26}{space 2} .1257733{col 37}{space 1}   -2.22{col 46}{space 3}0.031{col 54}{space 4}-.5315801{col 67}{space 3}-.0268149
+{txt}{space 12} {c |}
+{space 8}Emax {c |}{col 14}{res}{space 2} 1.033134{col 26}{space 2} .4574424{col 37}{space 1}    2.26{col 46}{space 3}0.028{col 54}{space 4} .1152085{col 67}{space 3} 1.951059
+{txt}{space 3}_Iyear_81 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_82 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_83 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_84 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_85 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_86 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_87 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_88 {c |}{col 14}{res}{space 2} .8150481{col 26}{space 2} .3632039{col 37}{space 1}    2.24{col 46}{space 3}0.029{col 54}{space 4} .0862261{col 67}{space 3}  1.54387
+{txt}{space 3}_Iyear_89 {c |}{col 14}{res}{space 2} .7678755{col 26}{space 2}  .321015{col 37}{space 1}    2.39{col 46}{space 3}0.020{col 54}{space 4} .1237118{col 67}{space 3} 1.412039
+{txt}{space 3}_Iyear_90 {c |}{col 14}{res}{space 2} .6749141{col 26}{space 2} .2841062{col 37}{space 1}    2.38{col 46}{space 3}0.021{col 54}{space 4} .1048133{col 67}{space 3} 1.245015
+{txt}{space 3}_Iyear_91 {c |}{col 14}{res}{space 2} .6075705{col 26}{space 2} .2483726{col 37}{space 1}    2.45{col 46}{space 3}0.018{col 54}{space 4} .1091745{col 67}{space 3} 1.105967
+{txt}{space 3}_Iyear_92 {c |}{col 14}{res}{space 2} .5142695{col 26}{space 2} .1970445{col 37}{space 1}    2.61{col 46}{space 3}0.012{col 54}{space 4} .1188706{col 67}{space 3} .9096683
+{txt}{space 3}_Iyear_93 {c |}{col 14}{res}{space 2} .3902911{col 26}{space 2} .1524401{col 37}{space 1}    2.56{col 46}{space 3}0.013{col 54}{space 4} .0843977{col 67}{space 3} .6961844
+{txt}{space 3}_Iyear_94 {c |}{col 14}{res}{space 2} .3431697{col 26}{space 2} .1078656{col 37}{space 1}    3.18{col 46}{space 3}0.002{col 54}{space 4} .1267215{col 67}{space 3} .5596179
+{txt}{space 3}_Iyear_95 {c |}{col 14}{res}{space 2} .2148582{col 26}{space 2} .0566002{col 37}{space 1}    3.80{col 46}{space 3}0.000{col 54}{space 4} .1012815{col 67}{space 3} .3284348
+{txt}{space 3}_Iyear_96 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_97 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_98 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_99 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_100 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_101 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_102 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_103 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_104 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2}  6.46784{col 26}{space 2} .2273642{col 37}{space 1}   28.45{col 46}{space 3}0.000{col 54}{space 4} 6.011601{col 67}{space 3}  6.92408
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. *****
+. use "curfews_class.dta", clear
+{txt}(UNIFORM CRIME REPORTING PROGRAM [UNITED STATES]: ARRESTS BY AGE, SEX, AND RACE F)
+
+{com}. gen E = 0
+{txt}
+{com}. replace E = 1 if t==0
+{txt}(53 real changes made)
+
+{com}. egen cityid=group(city) 
+{txt}
+{com}. tsset cityid year
+{res}{txt}{col 8}panel variable:  {res}cityid (unbalanced)
+{txt}{col 9}time variable:  {res}{col 25}year, 80 to 104
+{txt}{col 17}delta:  {res}1 unit
+{txt}
+{com}. gen Emin= year-enacted <=-5
+{txt}
+{com}. gen Emax= year-enacted >=5
+{txt}
+{com}. xi: areg lnarrests Emin l(-4/-1).E l(1/4).E Emax i.year i.t, abs(city) cluster(city)
+{txt}i.year{col 19}_Iyear_80-104{col 39}(naturally coded; _Iyear_80 omitted)
+i.t{col 19}_It_1-42{col 39}(_It_1 for t==-22 omitted)
+{p 0 6 2}note: _Iyear_81 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_82 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_83 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_100 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_101 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_102 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_103 omitted because of collinearity{p_end}
+{p 0 6 2}note: _Iyear_104 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_2 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_3 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_4 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_18 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_19 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_20 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_21 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_22 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_23 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_24 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_25 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_26 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_27 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_37 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_38 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_39 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_40 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_41 omitted because of collinearity{p_end}
+{p 0 6 2}note: _It_42 omitted because of collinearity{p_end}
+{res}
+{txt}Linear regression, absorbing indicators{col 49}Number of obs{col 67}= {res}       890
+{txt}Absorbed variable: {bf:city}{col 49}No. of categories{col 67}= {res}        53
+{txt}{col 49}{help j_robustsingular##|_new:F(  43,     52)}{col 67}=          {res}.
+{txt}{col 49}Prob > F{col 67}=          {res}.
+{txt}{col 49}R-squared{col 67}= {res}    0.8844
+{txt}{col 49}Adj R-squared{col 67}= {res}    0.8697
+{txt}{col 49}Root MSE{col 67}= {res}    0.2578
+
+{txt}{ralign 78:(Std. Err. adjusted for {res:53} clusters in city)}
+{hline 13}{c TT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{col 14}{c |}{col 26}    Robust
+{col 1}   lnarrests{col 14}{c |}      Coef.{col 26}   Std. Err.{col 38}      t{col 46}   P>|t|{col 54}     [95% Con{col 67}f. Interval]
+{hline 13}{c +}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+{space 8}Emin {c |}{col 14}{res}{space 2} .4081772{col 26}{space 2} .2501423{col 37}{space 1}    1.63{col 46}{space 3}0.109{col 54}{space 4}-.0937701{col 67}{space 3} .9101244
+{txt}{space 12} {c |}
+{space 11}E {c |}
+{space 9}F4. {c |}{col 14}{res}{space 2} .3584875{col 26}{space 2} .2069415{col 37}{space 1}    1.73{col 46}{space 3}0.089{col 54}{space 4}-.0567709{col 67}{space 3} .7737459
+{txt}{space 9}F3. {c |}{col 14}{res}{space 2} .3020376{col 26}{space 2} .1598832{col 37}{space 1}    1.89{col 46}{space 3}0.064{col 54}{space 4}-.0187916{col 67}{space 3} .6228667
+{txt}{space 9}F2. {c |}{col 14}{res}{space 2} .2001731{col 26}{space 2} .1092006{col 37}{space 1}    1.83{col 46}{space 3}0.073{col 54}{space 4}-.0189539{col 67}{space 3} .4193001
+{txt}{space 9}F1. {c |}{col 14}{res}{space 2} .1326059{col 26}{space 2} .0623784{col 37}{space 1}    2.13{col 46}{space 3}0.038{col 54}{space 4} .0074344{col 67}{space 3} .2577774
+{txt}{space 9}L1. {c |}{col 14}{res}{space 2} -.132287{col 26}{space 2} .0555494{col 37}{space 1}   -2.38{col 46}{space 3}0.021{col 54}{space 4} -.243755{col 67}{space 3} -.020819
+{txt}{space 9}L2. {c |}{col 14}{res}{space 2}-.2147102{col 26}{space 2} .1151638{col 37}{space 1}   -1.86{col 46}{space 3}0.068{col 54}{space 4}-.4458032{col 67}{space 3} .0163829
+{txt}{space 9}L3. {c |}{col 14}{res}{space 2}-.2725461{col 26}{space 2}  .154183{col 37}{space 1}   -1.77{col 46}{space 3}0.083{col 54}{space 4}-.5819369{col 67}{space 3} .0368447
+{txt}{space 9}L4. {c |}{col 14}{res}{space 2}-.3449661{col 26}{space 2}  .197031{col 37}{space 1}   -1.75{col 46}{space 3}0.086{col 54}{space 4}-.7403378{col 67}{space 3} .0504056
+{txt}{space 12} {c |}
+{space 8}Emax {c |}{col 14}{res}{space 2}-.7951161{col 26}{space 2} .6919207{col 37}{space 1}   -1.15{col 46}{space 3}0.256{col 54}{space 4}-2.183556{col 67}{space 3} .5933243
+{txt}{space 3}_Iyear_81 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_82 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_83 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 3}_Iyear_84 {c |}{col 14}{res}{space 2}-.7955441{col 26}{space 2}  .775565{col 37}{space 1}   -1.03{col 46}{space 3}0.310{col 54}{space 4}-2.351829{col 67}{space 3} .7607409
+{txt}{space 3}_Iyear_85 {c |}{col 14}{res}{space 2} -.656969{col 26}{space 2} .7240172{col 37}{space 1}   -0.91{col 46}{space 3}0.368{col 54}{space 4}-2.109816{col 67}{space 3} .7958777
+{txt}{space 3}_Iyear_86 {c |}{col 14}{res}{space 2}-.6196262{col 26}{space 2} .6725804{col 37}{space 1}   -0.92{col 46}{space 3}0.361{col 54}{space 4}-1.969258{col 67}{space 3}  .730005
+{txt}{space 3}_Iyear_87 {c |}{col 14}{res}{space 2}-.6142091{col 26}{space 2} .6212582{col 37}{space 1}   -0.99{col 46}{space 3}0.327{col 54}{space 4}-1.860855{col 67}{space 3} .6324367
+{txt}{space 3}_Iyear_88 {c |}{col 14}{res}{space 2}-.5390393{col 26}{space 2} .5733956{col 37}{space 1}   -0.94{col 46}{space 3}0.352{col 54}{space 4}-1.689642{col 67}{space 3} .6115632
+{txt}{space 3}_Iyear_89 {c |}{col 14}{res}{space 2}-.3826363{col 26}{space 2} .5132245{col 37}{space 1}   -0.75{col 46}{space 3}0.459{col 54}{space 4}-1.412497{col 67}{space 3} .6472241
+{txt}{space 3}_Iyear_90 {c |}{col 14}{res}{space 2}-.2904415{col 26}{space 2} .4631328{col 37}{space 1}   -0.63{col 46}{space 3}0.533{col 54}{space 4}-1.219785{col 67}{space 3} .6389025
+{txt}{space 3}_Iyear_91 {c |}{col 14}{res}{space 2}-.1772727{col 26}{space 2} .4205025{col 37}{space 1}   -0.42{col 46}{space 3}0.675{col 54}{space 4}-1.021073{col 67}{space 3} .6665273
+{txt}{space 3}_Iyear_92 {c |}{col 14}{res}{space 2}-.0911659{col 26}{space 2} .3679515{col 37}{space 1}   -0.25{col 46}{space 3}0.805{col 54}{space 4}-.8295145{col 67}{space 3} .6471827
+{txt}{space 3}_Iyear_93 {c |}{col 14}{res}{space 2}-.0403892{col 26}{space 2} .3258346{col 37}{space 1}   -0.12{col 46}{space 3}0.902{col 54}{space 4}-.6942241{col 67}{space 3} .6134457
+{txt}{space 3}_Iyear_94 {c |}{col 14}{res}{space 2} .1053254{col 26}{space 2} .2678978{col 37}{space 1}    0.39{col 46}{space 3}0.696{col 54}{space 4}-.4322509{col 67}{space 3} .6429018
+{txt}{space 3}_Iyear_95 {c |}{col 14}{res}{space 2} .1559764{col 26}{space 2} .2162078{col 37}{space 1}    0.72{col 46}{space 3}0.474{col 54}{space 4}-.2778764{col 67}{space 3} .5898291
+{txt}{space 3}_Iyear_96 {c |}{col 14}{res}{space 2} .1274458{col 26}{space 2} .1689622{col 37}{space 1}    0.75{col 46}{space 3}0.454{col 54}{space 4}-.2116017{col 67}{space 3} .4664933
+{txt}{space 3}_Iyear_97 {c |}{col 14}{res}{space 2} .1489101{col 26}{space 2} .1227038{col 37}{space 1}    1.21{col 46}{space 3}0.230{col 54}{space 4}-.0973131{col 67}{space 3} .3951334
+{txt}{space 3}_Iyear_98 {c |}{col 14}{res}{space 2} .0926676{col 26}{space 2} .0775196{col 37}{space 1}    1.20{col 46}{space 3}0.237{col 54}{space 4}-.0628868{col 67}{space 3} .2482221
+{txt}{space 3}_Iyear_99 {c |}{col 14}{res}{space 2}-.0609608{col 26}{space 2} 2.96e-06{col 37}{space 1}-2.1e+04{col 46}{space 3}0.000{col 54}{space 4}-.0609667{col 67}{space 3}-.0609548
+{txt}{space 2}_Iyear_100 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_101 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_102 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_103 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 2}_Iyear_104 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_It_2 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_It_3 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_It_4 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_It_5 {c |}{col 14}{res}{space 2}  .738834{col 26}{space 2} .6783582{col 37}{space 1}    1.09{col 46}{space 3}0.281{col 54}{space 4}-.6223914{col 67}{space 3} 2.100059
+{txt}{space 7}_It_6 {c |}{col 14}{res}{space 2} .9212447{col 26}{space 2} .6242802{col 37}{space 1}    1.48{col 46}{space 3}0.146{col 54}{space 4}-.3314651{col 67}{space 3} 2.173955
+{txt}{space 7}_It_7 {c |}{col 14}{res}{space 2} .0646275{col 26}{space 2} .5704513{col 37}{space 1}    0.11{col 46}{space 3}0.910{col 54}{space 4}-1.080067{col 67}{space 3} 1.209322
+{txt}{space 7}_It_8 {c |}{col 14}{res}{space 2} .7156258{col 26}{space 2} .5157381{col 37}{space 1}    1.39{col 46}{space 3}0.171{col 54}{space 4}-.3192785{col 67}{space 3}  1.75053
+{txt}{space 7}_It_9 {c |}{col 14}{res}{space 2} .6623238{col 26}{space 2} .4693732{col 37}{space 1}    1.41{col 46}{space 3}0.164{col 54}{space 4}-.2795424{col 67}{space 3}  1.60419
+{txt}{space 6}_It_10 {c |}{col 14}{res}{space 2} .3927616{col 26}{space 2} .4749715{col 37}{space 1}    0.83{col 46}{space 3}0.412{col 54}{space 4}-.5603385{col 67}{space 3} 1.345862
+{txt}{space 6}_It_11 {c |}{col 14}{res}{space 2} .3252515{col 26}{space 2} .3798449{col 37}{space 1}    0.86{col 46}{space 3}0.396{col 54}{space 4}-.4369631{col 67}{space 3} 1.087466
+{txt}{space 6}_It_12 {c |}{col 14}{res}{space 2} .2191146{col 26}{space 2} .3754749{col 37}{space 1}    0.58{col 46}{space 3}0.562{col 54}{space 4}-.5343309{col 67}{space 3} .9725601
+{txt}{space 6}_It_13 {c |}{col 14}{res}{space 2} .1633016{col 26}{space 2} .3064882{col 37}{space 1}    0.53{col 46}{space 3}0.596{col 54}{space 4} -.451712{col 67}{space 3} .7783152
+{txt}{space 6}_It_14 {c |}{col 14}{res}{space 2} .1967956{col 26}{space 2} .2247198{col 37}{space 1}    0.88{col 46}{space 3}0.385{col 54}{space 4}-.2541377{col 67}{space 3} .6477289
+{txt}{space 6}_It_15 {c |}{col 14}{res}{space 2} .2078566{col 26}{space 2}  .164196{col 37}{space 1}    1.27{col 46}{space 3}0.211{col 54}{space 4}-.1216267{col 67}{space 3}   .53734
+{txt}{space 6}_It_16 {c |}{col 14}{res}{space 2} .1080069{col 26}{space 2} .1051435{col 37}{space 1}    1.03{col 46}{space 3}0.309{col 54}{space 4} -.102979{col 67}{space 3} .3189928
+{txt}{space 6}_It_17 {c |}{col 14}{res}{space 2} .0502498{col 26}{space 2}  .061717{col 37}{space 1}    0.81{col 46}{space 3}0.419{col 54}{space 4}-.0735945{col 67}{space 3}  .174094
+{txt}{space 6}_It_18 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_19 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_20 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_21 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_22 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_23 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_24 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_25 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_26 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_27 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_28 {c |}{col 14}{res}{space 2} .3672781{col 26}{space 2} .4500603{col 37}{space 1}    0.82{col 46}{space 3}0.418{col 54}{space 4}-.5358339{col 67}{space 3}  1.27039
+{txt}{space 6}_It_29 {c |}{col 14}{res}{space 2} .2446411{col 26}{space 2} .4150873{col 37}{space 1}    0.59{col 46}{space 3}0.558{col 54}{space 4}-.5882926{col 67}{space 3} 1.077575
+{txt}{space 6}_It_30 {c |}{col 14}{res}{space 2} .0612234{col 26}{space 2} .3752743{col 37}{space 1}    0.16{col 46}{space 3}0.871{col 54}{space 4}-.6918196{col 67}{space 3} .8142665
+{txt}{space 6}_It_31 {c |}{col 14}{res}{space 2} .0796239{col 26}{space 2}  .317661{col 37}{space 1}    0.25{col 46}{space 3}0.803{col 54}{space 4}-.5578095{col 67}{space 3} .7170573
+{txt}{space 6}_It_32 {c |}{col 14}{res}{space 2}-.0107267{col 26}{space 2} .2759223{col 37}{space 1}   -0.04{col 46}{space 3}0.969{col 54}{space 4}-.5644054{col 67}{space 3} .5429521
+{txt}{space 6}_It_33 {c |}{col 14}{res}{space 2} .0257972{col 26}{space 2} .2276906{col 37}{space 1}    0.11{col 46}{space 3}0.910{col 54}{space 4}-.4310974{col 67}{space 3} .4826918
+{txt}{space 6}_It_34 {c |}{col 14}{res}{space 2}-.0877256{col 26}{space 2} .2150611{col 37}{space 1}   -0.41{col 46}{space 3}0.685{col 54}{space 4}-.5192773{col 67}{space 3} .3438262
+{txt}{space 6}_It_35 {c |}{col 14}{res}{space 2}-.2620729{col 26}{space 2} .2022683{col 37}{space 1}   -1.30{col 46}{space 3}0.201{col 54}{space 4}-.6679539{col 67}{space 3} .1438082
+{txt}{space 6}_It_36 {c |}{col 14}{res}{space 2}-.6407679{col 26}{space 2} .2856921{col 37}{space 1}   -2.24{col 46}{space 3}0.029{col 54}{space 4}-1.214051{col 67}{space 3}-.0674847
+{txt}{space 6}_It_37 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_38 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_39 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_40 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_41 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 6}_It_42 {c |}{col 14}{res}{space 2}        0{col 26}{txt}  (omitted)
+{space 7}_cons {c |}{col 14}{res}{space 2} 7.044522{col 26}{space 2} .3449762{col 37}{space 1}   20.42{col 46}{space 3}0.000{col 54}{space 4} 6.352277{col 67}{space 3} 7.736768
+{txt}{hline 13}{c BT}{hline 11}{hline 11}{hline 9}{hline 8}{hline 13}{hline 12}
+
+{com}. 
+. 
+. log close
+      {txt}name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\Lara\Documents\Econo2\hw4\hw4_log.smcl
+  {txt}log type:  {res}smcl
+ {txt}closed on:  {res}25 Apr 2020, 16:25:38
+{txt}{.-}
+{smcl}
+{txt}{sf}{ul off}

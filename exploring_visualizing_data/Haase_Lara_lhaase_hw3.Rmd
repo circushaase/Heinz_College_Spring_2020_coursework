@@ -1,0 +1,162 @@
+---
+title: 95-868 Homework 3
+author: Lara Haase lhaase
+output: html_document
+---
+
+#### Instructions 
+
+Submit this Rmd file on blackboard. Don't submit additional files.
+
+Code should be clearly commented. Plots should be presentable and properly sized/labeled/titled. Mitigate overplotting whenever necessary.
+
+#### Preliminaries
+
+Here are some libraries that you may need.
+```{r}
+library(ggplot2)
+library(plyr)
+library(reshape2)
+library(knitr)
+library(binom)
+
+```
+
+We will use the data frame `county.data`, which is in the data file `hw3_data.rda`. (Make sure `hw3_data.rda` is in the same directory as this markdown file!)
+
+```{r}
+load('hw3_data.rda')
+```
+
+Finally, here is the function `Find.p` that we used in lecture 6 to compute p-values against a null hypothesis for binomially distributed data, and also a vectorized version:
+
+```{r}
+# Find.p.value: Finds the p-value of a binomial test
+Find.p = function(x, n, p){
+  test.result = binom.test(x=x, n=n, p = p, alternative = 'greater')
+  return(test.result$p.value) # we can return one thing
+}
+Vec.find.p = Vectorize(Find.p, c('x', 'n'))
+```
+
+#### Questions 
+
+**Problem 1:** 
+
+Using `county.data`, make a scatterplot of the per capita violent crime rates for each county as function of the population. Does this plot resemble those for deaths or infant deaths that we saw in the notes? If not, what is the biggest difference?
+
+Note: you may want to use a log transform on the x-axis to see the data more clearly.
+
+```{r fig.width=6, fig.height=4, dpi=80, fig.align='center'}
+
+# Calculate the per-capita-crime rate for each county and add it to the county.data df
+county.data$per.cap.crime <- county.data$violent.crimes/county.data$population
+
+#plot the log of population vs the per capita crime rate
+ggplot(data=county.data, mapping=aes(x=log(population), y=per.cap.crime)) + geom_point()
+
+```
+
+ANS: This plot is fairly different. Both the deaths per capita and infant deaths per capita appear to trend downward as the log of population increases, however this plot of violent crime per capita has a less defined trend, with a potentiall slightly positive correlation between log population and crime oer capita. 
+Also, in the plot of deaths per capital there are no counties that have a rate of 0 deaths per capita. However both in this graph of crime and the graph of infant deaths per capita, both show counties along the x-axis with a rate of 0.  
+
+
+**Problem 2:**
+
+Suppose that you supervisor asks you use `county.data` to prepare a list of counties in the US where crime is an extremely serious problem.
+
+To do this, you decide to model the number of violent crimes in each county as a `Bernoulli(n,p)` random variable, where `n` is the county population and `p` is the unknown underlying crime risk that each person faces.
+
+You decide to return a list of counties for which the evidence is strongest that their underlying crime risk (the `p` parameter) is greater than 1.5 percent. 
+
+How many counties should you include in the list? You decide that the list should have a 10 percent family wise error rate ("family-wise error rate" means Bonferoni correction) -- you are willing to have a slightly higher chance of error than typically assumed.
+
+Create this list. Show the county name, population, number of violent crimes, per capita rate, and the number of standardized residuals above your null of `p=0.015`.
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+#create new df including all data from county.data, but adding a column that calculates the p-value of whether violent crime in each county are greater than 1.5%
+county.augmented = mutate(county.data, 
+                          p.val = Vec.find.p(x = violent.crimes, n = population, p=0.015))
+
+#calcuate the overall US per capita violent crime rate to display on plot
+US.crime = sum(county.data$violent.crimes) / sum(county.data$population)
+
+#add columns in the county.augmented df to calculate the standard residuals
+county.augmented = mutate(county.augmented, 
+    expected.crime = population * per.cap.crime, 
+    st.dev.crime = sqrt(expected.crime*(1 - US.crime)),
+    residual = deaths - expected.crime,
+    std.residual = residual / st.dev.crime)
+
+#determine the cutoff for the Bonferoni correction at a 10% family wise error rate
+cutoff = 0.1/nrow(county.data)
+
+#report the counties that have a p-value greater than 10% for violent crime risk greater than 1.5
+kable(county.augmented[county.augmented$p.val <= cutoff, c("name", "population", "violent.crimes", "per.cap.crime", "std.residual")], digits=3)
+
+
+```
+
+
+**Problem 3:**
+
+Use Bonferoni-corrected 95% confidence intervals to visualize the underlying crime risk for the counties in `county.data`. 
+
+Create a plot showing the confidence intervals for the 1000 counties with the highest values for the lower bound of the confidence intervals. Also add a reference line to show the overall US per capita violent crime rate.
+
+You don't have to show the county names, just their confidence intervals.
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+
+# compute a bonf. CI for the crime rate
+conf.level = 1 - 0.05/nrow(county.data)
+bonf.CI.data = with(county.augmented, 
+               binom.confint(x = violent.crimes, n = population, 
+                             conf.level = conf.level, methods = 'exact'))
+
+# add the results to the data frame
+county.augmented = with(bonf.CI.data, 
+    mutate(county.augmented, 
+    bonf.lower.CI = lower, bonf.upper.CI = upper))
+
+
+#arrange county.augmented by lower CI descending
+county.augmented = arrange(county.augmented, desc(bonf.lower.CI))
+
+#create df to plot with only 1000 counties with highest values for lower bound of CI
+plotdf<- head(county.augmented, 1000)
+rownames(plotdf) <- 1:nrow(plotdf)
+
+#plot Bonf. corrected 95% CI
+ggplot(data = plotdf, mapping=aes(x = rownames(plotdf) , ymin = bonf.lower.CI, ymax = bonf.upper.CI)) + 
+  geom_errorbar(width = .5) + 
+  geom_point(data=plotdf, mapping=aes(x=rownames(plotdf), y=per.cap.crime)) +  
+  geom_hline(yintercept = US.crime, color = 'red') + 
+  geom_text(x = 0, y = 0.004, label = 'US violent crime rate', color = 'red', size = 4, hjust = 0)
+
+
+```
+
+**Problem 4:**
+
+Redo the plot from problem 3, but only show the 20 counties with the highest lower bounds. This time, include the county names. Again, add a reference line to show the overall US per capita violent crime rate. Adjust the y-axis scale so that the plot is easily comparaed with the previous plot from problem 3.
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+
+#create df to plot with only 20 counties with highest values for lower bound of CI
+plotdf2<- head(county.augmented, 20)
+#reorder the df to display by lower CI rather than alphabetical order of name
+plotdf2= mutate(plotdf2, name = reorder(name, -bonf.lower.CI))
+
+#plot Bonf. corrected 95% CI
+ggplot(data = plotdf2, mapping=aes(x = name, ymin = bonf.lower.CI, ymax = bonf.upper.CI)) + 
+  geom_errorbar(width = .5) + 
+  geom_point(data=plotdf2, mapping=aes(x= name, y=per.cap.crime)) +  
+  geom_hline(yintercept = US.crime, color = 'red') + 
+  geom_text(x = 0.5, y = 0.004, label = 'US violent crime rate', color = 'red', size = 4, hjust = 0) + 
+  theme(text = element_text(size=15), axis.text.x = element_text(angle=45, vjust=1, hjust=1)) + 
+  ylim(0, 0.03)
+
+
+
+```

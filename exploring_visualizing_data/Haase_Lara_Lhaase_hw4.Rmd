@@ -1,0 +1,366 @@
+---
+title: 95-868 Homework 4
+author: Lara Haase (lhaase)
+output: html_document
+---
+
+#### Instructions 
+
+Submit this Rmd file on canvas. Also submit the .html as well.
+
+Code should be clearly commented. Plots should be presentable and properly labeled. Mitigate overplotting whenever possible. Feel free to increase the `fig.width` and `fig.height` arguments in each R code chunk to make your figures easy to read. Don't forget to answer the short response questions -- you can just type your answers into the markdown file.
+
+#### Preliminaries
+
+We'll use the data file `hw4_data.csv`, which should be in the same directory as this markdown file (which should also be your working directory). It is a data frame of expenditures by household from the consumer expenditure survey
+
+We will also use the `ggplot2movies` library, which contains a dataset of movie rankings
+
+Normally, the cross validation results will be different each time, since a random sample is taken. This could make grading difficult since we may not see the same results that you see. The command `set.seed(x)`, where `x` is any number, fixes the random number generator to give the same output every time.
+
+
+```{r}
+set.seed(1)
+
+library(plyr)
+library(ggplot2)
+library(reshape2)
+library(ggplot2movies) # for movies dataset
+library(boot) 
+library(splines)
+library(broom)
+expenditures = read.csv(file = 'hw4_data.csv', header = TRUE)
+```
+
+#### Questions 
+
+
+**Problem 1a:** 
+
+Using the expenditures in the data set `hw4_data.csv', group the households into two categories:
+
+* apartments: those whose `home.type` is "apartment or flat" or "high-rise"
+* homes: those whose `home.type` is "single family detached"
+
+Look at the `housing` expenditures for the two groups using a quantile plot. It should be easy to see the difference in the two groups for higher quantiles, but the difference should be hard to see for the lower quantiles.
+
+
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+
+# use mapvalues to relabel "high-rise" and "apartment or flat" as "apartment"
+expenditures$home.type = mapvalues(expenditures$home.type, from=c("high-rise", "apartment or flat"), to= c("apartments", "apartments"))
+
+# use mapvalues to relabel "single family detached" as "homes"
+expenditures$home.type = mapvalues(expenditures$home.type, from= "single family detached", to= "homes")
+
+#Save df subsetted of only these "home.type"
+expd = expenditures[which(expenditures$home.type == c("apartments", "homes")),]
+
+#use stat_qq() to draw a quantile plot from sample when distribution = "qunif"
+ggplot(data=expd, mapping=aes(sample=housing, color=home.type)) + 
+  stat_qq(geom = 'point', distribution = 'qunif') + 
+  labs(x='Quantile', y='Housing Expense', color = 'Home Type', title='Quantile Plot - Housing Expense (by Home Type)')
+
+```
+
+
+**Problem 1b:**
+
+Now compare the two groups after a log transform. 
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+# redraw the quantile plot using log of housing costs
+ggplot(data=expd, mapping=aes(sample=log(housing), color=home.type)) + 
+  stat_qq(geom = 'point', distribution = 'qunif') + 
+  labs(x='Quantile', y='Housing Expense', color = 'Home Type', title='Quantile Plot - (log)Housing Expense (by Home Type)')
+
+
+
+```
+
+QUESTION: Is the difference at the lower quantiles easier to see? Do the distributions look similar up to an additive shift?
+
+ANS: Yes, the difference in distribution is now easier in the lower quartiles. Yes, yhr distributions seem to follow the same trend.
+
+**Problem 1c:**
+
+Now compare each of the groups to a theoretical normal distribution. 
+
+Hint: you may want to first standardize the log costs. To do this, subtract their mean and dividing by their standard deviation (separately for each group).
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+
+#subset data to rows where "home.type" is "apartments"
+apts = expd[which(expd$home.type == "apartments"),]
+#drop rows where housing costs are 0, so that log transformation can be performed (removes 3 records)
+apts = apts[which(apts$housing>0),]
+#transform housing costs by log and save as column "loghousing"
+apts$loghousing = log(apts$housing)
+#standardize log of housing costs
+apts$std = with(apts,(loghousing-mean(loghousing))/sd(loghousing)) 
+
+#subset data to rows where "home.type" is "homes"
+notapts = expd[which(expd$home.type == "homes"),]
+#drop rows where housing costs are 0, so that log transformation can be performed (removes 1 record)
+notapts = notapts[which(notapts$housing>0),]
+#transform housing costs by log and save as column "loghousing"
+notapts$loghousing = log(notapts$housing)
+#standardize log of housing costs
+notapts$std = with(notapts,(loghousing-mean(loghousing))/sd(loghousing)) 
+
+#recombine the two groups into one df named "both"
+both= rbind(apts, notapts)
+
+#plot standardizaed log housing expenses of both home.type groups in quantile plot
+ggplot(data=both, mapping=aes(sample=std, color=home.type)) + 
+  stat_qq(distribution = 'qnorm') +  geom_abline(intercept=0, slope=1)+
+  labs(x='Quantile', y='Log Housing Expense (standardized)', color = 'Home Type', title='Quantile Plot - (log)Housing Expense (by Home Type)')
+
+```
+QUESTION: Do the log costs look normally distributed? Which deviates further from a normal distribution: the lowest quantiles, or the highest quantiles?
+
+ANS: The log costs look fairly similar to a normal distribution, but the lowest quantiles appear to deviate most from the normal distribution.
+
+**Problem 2a:**
+
+
+Using the `movies` dataset in the `ggplot2movies` library, make a quantile plot comparing the ratings for movies in the year 1940 vs the year 2003. You can put both quantiles on the same plot with different colors, or show them in different plots using `facet_wrap()` or `facet_grid()`, either is fine. 
+
+Hint: Since you are using `year` as a grouping variable, you may need to convert it from a number to a factor. You can use `as.factor(year)` instead of `year` to do this.
+
+```{r fig.width=6, fig.height=3, dpi=100, fig.align='center'}
+#create subset with only rows where year = 1940 or 2003
+df= movies[which(movies$year == c(1940, 2003)),]
+#convert year to factor to group by it
+df$year = as.factor(df$year)
+
+#use stat_qq() to draw a quantile plot 
+ggplot(data=df, mapping=aes(sample= rating, color=year)) + 
+  stat_qq(geom = 'point', distribution = 'qunif') + 
+  labs(x='Quantile', y='Rating', color = 'Year', title='Movie Ratings 1940 vs 2003)')
+
+```
+
+QUESTION: Do the distributions look different? Which year had a higher percentage of ratings above 9.0? Which year had a higher percentage of ratings below 5.0? Which year had a higher variance?
+
+ANS: Yes, the distributions are different. The year 2003 had a higher percentage of rating above 9.0. The year 2003 also had a greater percentage of ratings below 5.0. Again, 2003 had higher variance. 
+
+**Question 2b:**
+
+Without using any transforms, do a `t.test` to check if the ratings from 1940 and 2003 could have come from the same distribution. 
+
+```{r fig.width=6, fig.height=3, dpi=100, fig.align='center'}
+#t.test of rating for 2003 and 1940
+t.test(x=df[which(df$year == 1940),]$rating, y= df[which(df$year == 2003),]$rating)
+```
+
+QUESTION: What is the mean of each group? What is the conclusion of the t-test? Do you agree with the conclusion of the t-test?
+
+ANS: The mean rating of movies in 1940 is `r mean(df[which(df$year == 1940),]$rating)` and the mean rating of movies in 2003 is `r mean(df[which(df$year == 2003),]$rating)`.
+The t-test concluded that the null hypothesis could NOT be rejected and that the two distributions are not statistically significant. 
+I agree with the test. When looking at `summary()` of each group, the means and quantiles are very similar:
+`r summary(df[which(df$year == 1940),]$rating)`
+`r summary(df[which(df$year == 2003),]$rating)`
+
+Bonus: if you are curious, you can also try `wilcox.test()` and `ks.test()`.
+
+```{r fig.width=6, fig.height=3, dpi=100, fig.align='center'}
+wilcox.test(x=df[which(df$year == 1940),]$rating, y= df[which(df$year == 2003),]$rating)
+```
+
+```{r fig.width=6, fig.height=3, dpi=100, fig.align='center'}
+ks.test(x=df[which(df$year == 1940),]$rating, y= df[which(df$year == 2003),]$rating)
+```
+Wilcox Test also does not reject the Null, but the KS Test does, as is has a very small p-value. I am unsure why there is this difference.
+
+**Problem 3:**
+
+Compare the distribution of ratings for each of the genres: action, animation, comedy, drama, documentary, romance, and short. If a movie belongs to more than one genre, include it in both distributions. Use both quantile plots and Q-Q plots. For the quantile plot, you will want to use facets to divide the data into groups, and show a common reference line (specifically, the distribution of the pooled data) in each facet to make visual comparisons easy. For the QQ plot you will similarly compare the quantiles of each group against the quantiles of the pooled data.
+
+Hint: To make the facet wrap of QQ plots, you will want to write your own QQ plot funtion and use it inside the function `ddply' -- see the notes for an example of this.
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+#melt individual genre columns to create one column with all genres as levels
+movies.melt = melt(movies, measure.vars = c('Action', 'Animation', 'Comedy', 'Drama', 'Documentary', 'Romance', 'Short'))
+#remove all rows where value = 0, which is a relic of the melt function
+movies.melt = movies.melt[which(movies.melt$value == 1),]
+
+#copy movie.melt df without genre "variable" column
+movies.no.groups = subset(movies.melt, select='rating')
+
+#plot quantile plots in facets of the ratings of different genres
+ggplot(data=movies.melt, mapping=aes(sample= rating)) + 
+  stat_qq(geom = 'point', distribution = 'qunif') + 
+  facet_wrap("variable", nrow = 2) +
+  stat_qq(data = movies.no.groups, mapping = aes(sample = rating), distribution = 'qunif', geom = 'line') + 
+  labs(x='Quantiles', y='Rating', title='Movie Ratings by Genre')
+
+```
+
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+#QQ plot
+
+# This function finds the quantiles to create a QQ plot comparing ratings for genres ("variable") in the movies.melt df
+# with a vector all.ratings. It returns the output as a data frame
+Find.QQ = function(data, col.name, pooled.data) {
+  n.pts = min( length(data[ ,col.name]), length(pooled.data))
+  probs = seq(from = 0, to = 1, length.out = n.pts)
+  q1 = quantile(data[ ,col.name], probs= probs)
+  q2 = quantile(pooled.data, probs=probs )
+  return( data.frame(group.data = q1, pooled.data = q2, quantile = probs) )
+}
+
+#use ddply to run the Find.QQ function on the movie genre ratings
+genre.QQplots = ddply(movies.melt, 'variable', Find.QQ, col.name = 'rating', pooled.data = movies.melt$rating)
+
+#plot results
+ggplot(data = genre.QQplots, mapping=aes(x=pooled.data, y=group.data)) + 
+  geom_point() + 
+  facet_wrap('variable', nrow=2) + 
+  labs(title='QQ plots, groups vs pooled data', 
+       x = 'Quantiles', y = 'Ratings') + 
+  geom_abline(slope=1) 
+
+```
+
+QUESTIONS: True or False: 
+
+* The ratings distribution for action movies is worse than those of the pooled movies
+* Animation movies have better ratings than the overall distribution at the lower quantiles, but worse than the overall distribution at the highest quantiles.
+* Documentaries and Shorts have worse ratings than the overall distribution at the lower quantiles, but better ratings than the overall distribution otherwise.
+
+Also, which worked better for answering the T/F questions: quantile plots or QQ plots?
+
+ANS: The QQ plots made it easier to see the more subtle variations from the pooled ratings, particularly in the lowest and highest quantiles.
+
+
+**Problem 4:**
+
+Compare the distribution of ratings for each of the genres, and also for the following time periods: 1900-1920, 1921-1940, 1941-1960, 1961-1980, 1981-2000. Use Q-Q plots. You should make a "facet grid" with one plot for each combination of time period and genre -- i.e., there should be 35 plots total. You may remove movies for which the year is not reported.
+
+```{r fig.width=10, fig.height=10, dpi=100, fig.align='center'}
+#create new column with year groupings (factor data based on the year column)
+movies.melt$yrgroup  <- ifelse(movies.melt$year > 1980 & movies.melt$year < 2001, "1981-2000",
+                        ifelse(movies.melt$year > 1960 & movies.melt$year < 1981, "1961-1980",
+                        ifelse(movies.melt$year > 1940 & movies.melt$year < 1961, "1941-1960",
+                        ifelse(movies.melt$year > 1920 & movies.melt$year < 1941, "1921-1940",
+                        ifelse(movies.melt$year > 1899 & movies.melt$year < 1921  , "1900-1920", NA)))))
+
+#remove rows without a Year grouping (yrgroup)
+movies.melt<- movies.melt[which(!is.na(movies.melt$yrgroup)),]
+
+#QQ plot
+#use ddply to run the Find.QQ function on the movie ratings by genre and year grouping
+genre.year.QQplots = ddply(movies.melt, .(variable, yrgroup), Find.QQ, col.name = 'rating', pooled.data = movies.melt$rating)
+
+#plot results
+ggplot(data = genre.year.QQplots, mapping=aes(x=pooled.data, y=group.data)) + 
+  geom_point() + 
+  facet_wrap(c('variable', 'yrgroup'), ncol=5) + 
+  labs(title='QQ plots, groups vs pooled data', 
+       x = 'Quantile', y = 'Ratings') + 
+  geom_abline(slope=1) 
+
+```
+
+QUESTIONS:
+
+* Describe how the distribution of ratings for action movies changed over time, relative to the pooled ratings
+* Describe how the distribution of ratings for comedies changed over time, relative to the pooled ratings
+
+Just for fun: do your findings for either of these questions agree with your intuition or knowledge about action and comedy movies? (this questions won't be graded)
+
+ANS:
+Action: From 1920 to 1960, the lower quartile of action movies were rated higher than the pooled ratings, and were about the same as pooled ratings among other quartiles. Starting from 1961 to 1980 however, the lower quartile ratings met the pooled ratings and the middle quartiles began to dip below the pooled ratings. Then from 1981 to 2000 the middle quartiles dropped substantially lower than the pooled ratings. 
+
+Comedy: The lower half of the distributions for comedies from 1921 thru 1960 were rated higher than the pooled ratings. From 1961 to 1980 the lower quantile dipped below the pooled ratings while the rest of the quantiles stayed mostly consistent with pooled ratings. From 1981 to 2000 most of the quartiles were along the pooled ratings distribution, but the very middle quartile diper just a little below. 
+
+Just for Fun: Yes, the 80s were known for producing lots of terrible actions movies, as special effects became cheaper. It also makes sense that more poorly produced comedies were made during this time as well, as costs of filmmaking came down, making the art more access to less trained/qualified people.
+
+
+**Problem 5a:**
+
+Make a scatterplot of `healthcare` costs as a function of `age.interviewee`. You should notice the following things that are somewhat odd:
+
+1. There is a huge negative outlier
+2. There is an odd gap in ages and a disproportionate number of households where `age.interviewee` as 87
+
+```{r}
+ggplot(data = expenditures, aes(x=age.interviewee, y=healthcare)) + geom_point()
+
+```
+
+
+Remove the households who did not spend a positive amount on health care, or whose age is 87. Make a scatterplot of the healthcare costs for the remaining households. 
+
+```{r}
+#new data frame called "df" is created from expenditure dataframe of all columns, and only rows "which" have a 'healthcare' expense greater than 0 and whose 'age.interviewee' is not equal to 87
+df = expenditures[(which(expenditures$healthcare > 0 & expenditures$age.interviewee != 87)),]
+
+#plot healthcare as a function of age for this df subset
+ggplot(data = df, aes(x=age.interviewee, y=healthcare)) + geom_point()
+
+```
+
+Next, plot a log transform of `healthcare` against `age.interviewee`. Do you notice anything unusual about the distribution? Specifically, is there an abrupt change in the distribution of expenditures at any particular age?
+
+You should notice that around age 64 and up, there is an abrupt change; above this age, almost all of the households have a `log(healthcare)` above 5.3 or so. 
+
+Remove all households whose age is 64 or greater. We will restrict our analysis of healthcare costs to those who are age 63 or less. We will call this dataframe `young`.
+
+```{r}
+#plot log transform of 'healthcare' vs age
+ggplot(data = df, aes(x=age.interviewee, y=log(healthcare))) + geom_point()
+```
+```{r}
+#create new "young" dataframe that subsets households with interviewee age less than 64
+young = df[which(df$age.interviewee < 64),]
+
+```
+
+The dataframe `young` should consist of all households who speant a positive amount on healthcare, and whose age is 63 or less. We will use this data frame in question 5b.
+
+**Problem 5b:**
+
+Under the log transform, use ten-fold cross validation (so `K=10`) to fit a natural spline to healthcare costs in the data frame that you created in Question 5b (which we called `young`). Let the `df` parameter range from 1 to 15 in your cross-validation procedure.
+
+To help the grader, you should show the following results
+
+1. a plot of the cross-validation scores as a function of `df`
+2. a scatterplot showing `log(healthcare)` as a function of `age.interviewee`, along with the fitted trend line
+3. a scatterplot showing `healthcare` as a function of `age.interviewee`, with the fitted trend line under an appropriate transformation
+
+
+```{r}
+# store scores from each round of cross validation in cv.score, here initialized to zero.
+cv.scores = rep(0, times=15)
+
+# vary DF from 1 to 15
+for (DF in 1:15) {
+  # fit the spline fit with df=DF, using glm
+  spline.model = glm(log(healthcare)~ns(age.interviewee, df=DF), data=young)
+  # run tenfold cross validation 
+  cv = cv.glm(data=young, glmfit=spline.model, K=10)
+  # extract the cross-validation score
+  cv.scores[DF] = cv$delta[1]
+}
+
+# plot of the cross-validation scores as a function of `df`
+ggplot(mapping=aes(x=1:15, y=cv.scores)) + geom_point() + labs(x='df', title='Cross Validation Scores')
+
+```
+
+```{r}
+#a scatterplot showing `log(healthcare)` as a function of `age.interviewee`, along with the fitted trend line
+
+ggplot(data = young, aes(x=age.interviewee, y=log(healthcare))) + geom_point() + geom_smooth(method='lm', formula = y ~ ns(x, df=3)) 
+
+```
+
+```{r}
+#scatterplot showing `healthcare` as a function of `age.interviewee`, with the fitted trend line under an appropriate transformation
+
+ggplot(data = young, mapping=aes(x = age.interviewee^(1/3), y = healthcare/age.interviewee)) + geom_point(size=1) + geom_smooth(method = 'lm', formula = y~ns(x,df=3)) + labs(y = 'Healthcare Spending/Age Ratio')
+```

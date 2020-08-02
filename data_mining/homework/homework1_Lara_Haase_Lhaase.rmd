@@ -1,0 +1,239 @@
+---
+title: "Homework 1"
+author: "Lara Haase (Lhaase)"
+date: 'Assigned: March 23, 2020'
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    theme: cerulean
+    highlight: tango
+---
+
+##### This homework is due by **11:59PM on Monday, March 30**.  
+
+##### To complete this assignment, follow these steps:
+
+1. Download the `homework1.Rmd` file from Canvas.
+2. Open `homework1.Rmd` in RStudio.
+
+3. Replace the "Your Name Here" text in the `author:` field with your own name.
+
+4. Supply your solutions to the homework by editing `homework1.Rmd`.
+
+5. When you have completed the homework and have **checked** that your code both runs in the Console and knits correctly when you click `Knit HTML`, rename the R Markdown file to `homework1_YourNameHere.Rmd`, and submit both the `.Rmd` file and the `.html` output file on Blackboard.  (YourNameHere should be changed to your own name.)
+
+##### Homework tips:
+
+1. Recall the following useful RStudio hotkeys.
+
+Keystroke | Description
+------------|-------------------------------------------
+`<tab>` | Autocompletes commands and filenames, and lists arguments for functions.
+`<up>` | Cycles through previous commands in the console prompt
+`<ctrl-up>` | Lists history of previous commands matching an unfinished one
+`<ctrl-enter>` | Runs current line from source window to Console. Good for trying things out ideas from a source file.
+`<ESC>` | Aborts an unfinished command and get out of the + prompt
+
+**Note**: Shown above are the Windows/Linux keys.  For Mac OS X, the `<ctrl>` key should be substituted with the `<command>` (&#8984;) key.
+
+2. Instead of sending code line-by-line with `<ctrl-enter>`, you can send entire code chunks, and even run all of the code chunks in your .Rmd file. Look under the <Chunks> menu of the Source panel.
+
+3. Run your code in the Console and Knit HTML frequently to check for errors.
+
+4. You may find it easier to solve a problem by interacting only with the Console at first, or by creating a separate `.R` source file that contains only R code and no Markdown.
+
+### Introduction: Bikeshare data
+
+```{r}
+library(ggplot2)
+library(plyr)
+library(ISLR)
+library(MASS)
+library(knitr)
+
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+options(scipen = 4)
+```
+
+For this problem we'll be working with two years of bikeshare data from the Capital Bikeshare system in Washington DC.  The dataset contains daily bikeshare counts, along with daily measurements on environmental and seasonal information that may affect the bikesharing.  
+
+### Data pre-processing 
+
+Let's start by loading the data. Load Bike Data attached to Homework 1.
+
+```{r}
+bikes <- read.csv("bikes.csv", header = TRUE)
+
+# Transform temp and atemp to degrees C instead of [0,1] scale
+# Transform humidity to %
+# Transform wind speed (multiply by 67, the normalizing value)
+
+bikes <- transform(bikes,
+                   temp = 47 * temp - 8,
+                   atemp = 66 * atemp - 16,
+                   hum = 100 * hum,
+                   windspeed = 67 * windspeed)
+
+# The mapvalues() command from the plyr library allows us to easily
+# rename values in our variables.  Below we use this command to change season
+# from numeric codings to season names.
+
+bikes <- transform(bikes, 
+                   season = mapvalues(season, c(1,2,3,4), 
+                                      c("Winter", "Spring", "Summer", "Fall")))
+```
+
+Let's look at some boxplots of how bikeshare ride count varies with season.
+
+```{r, fig.height = 4, fig.width = 5} 
+qplot(data = bikes, x = season, y = cnt, fill = I(cbPalette[3]), geom = "boxplot")
+```
+
+There's something funny going on here.  Instead of showing up in seasonal order, the seasons in the plot are showing up in **alphabetical order**.  The following command reorders the seasons appropriately.
+
+```{r}
+bikes <- transform(bikes, season = factor(season, levels = c("Winter", "Spring", "Summer", "Fall")))
+```
+
+Now let's try that plot again.
+
+```{r, fig.height = 4, fig.width = 5} 
+qplot(data = bikes, x = season, y = cnt, fill = I(cbPalette[3]), geom = "boxplot")
+```
+
+Here's information on what the variables mean.
+
+  - instant: record index
+	- dteday : date
+	- season : season (1:Winter, 2:Spring, 3:Summer, 4:Fall)
+	- yr : year (0: 2011, 1:2012)
+	- mnth : month ( 1 to 12)
+	- hr : hour (0 to 23)
+	- holiday : weather day is holiday or not (extracted from http://dchr.dc.gov/page/holiday-schedule)
+	- weekday : day of the week
+	- workingday : if day is neither weekend nor holiday is 1, otherwise is 0.
+	+ weathersit : 
+		- 1: Clear, Few clouds, Partly cloudy, Partly cloudy
+		- 2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist
+		- 3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds
+		- 4: Heavy Rain + Ice Pallets + Thunderstorm + Mist, Snow + Fog
+	- temp : Temperature in Celsius. 
+	- atemp: Feeling temperature in Celsius. 
+	- hum: Normalized humidity. The values are divided to 100 (max)
+	- windspeed: Normalized wind speed. The values are divided to 67 (max)
+	- casual: count of casual users
+	- registered: count of registered users
+	- cnt: count of total rental bikes including both casual and registered
+
+### Problem 1: Qualitative predictors
+
+> The Season variable is an example of what's called a *qualitative* or *categorical* predictor.  In R, such variables are called `factors`.  This problem gets to fit a model with a qualitative predictor and to interpret the findings.
+
+
+##### **(a)** Fit a linear regression model with `cnt` as the response and `season` as the input.  Use the `summary()` and `kable()` commands to produce a nice looking coefficients table.
+
+```{r}
+lm_fit<- lm(cnt ~ season, data = bikes)
+kable(coef(summary(lm_fit)), digits = c(2,2,2,2))
+```
+
+##### **(b)** How many total coefficients are there in the model?
+
+- There are `r length(coef(lm_fit))` coefficients in the model.
+    
+    
+##### **(c)** How many coefficients are estimated for the `season` variable?
+  
+- There is `r length(coef(lm_fit)['season'])` coefficient for `season` in the model.
+    
+    
+##### **(d)** Interpret the coefficients of `season` in the model.
+   
+- The coefficient of `seasonSpring` is `r coef(lm_fit)['seasonSpring']`. This means that `seasonSpring` is associated with `r abs(coef(lm_fit)['seasonSpring'])` unit increase in `cnt` compared to Winter.
+
+- The coefficient of `seasonSummer` is `r coef(lm_fit)['seasonSummer']`. This means that `seasonSummer` is associated with `r abs(coef(lm_fit)['seasonSummer'])` unit increase in `cnt` compared to Winter.
+
+- The coefficient of `seasonFall` is `r coef(lm_fit)['seasonFall']`. This means that `seasonFall` is associated with `r abs(coef(lm_fit)['seasonFall'])` unit increase in `cnt` compared to Winter.
+
+<p> **Hint**: If you have not previously studied how to interpret qualitative variables in regressions, begin by reading through the relevant sections of the **Suggested readings** for the Week 1 lectures </p>
+
+<hr>
+
+### Problem 2: Multiple linear regression
+
+> In this problem we'll practice fitting and interpreting the results of a multiple linear regression.
+
+##### **(a)** Fit a regression model with `cnt` as the response and the following variables as inputs: `temp`, `atemp`, `mnth`, `hum`, `windspeed`.  Use the `summary()` and `kable()` commands to produce a nice looking coefficients table.
+
+```{r}
+multifit<- lm(cnt ~ temp + atemp + mnth + hum + windspeed, data = bikes)
+kable(coef(summary(multifit)), digits = c(2,2,2,4))
+```
+
+##### **(b)** Interpret the coefficients of mnth, windspeed and atemp in the model.
+
+- The coefficient of `mnth` is `r coef(multifit)['mnth']`. This means that a one unit increase in `mnth` (with January = 1, February = 2, etc) is associated with `r abs(coef(multifit)['mnth'])` unit increase in `cnt`.
+
+- The coefficient of `windspeed` is `r coef(multifit)['windspeed']`. This means that a one unit increase in `windspeed` is associated with `r abs(coef(multifit)['windspeed'])` unit decrease in `cnt`.
+
+- The coefficient of `atemp` is `r coef(multifit)['atemp']`. This means that a one unit increase in `atemp` is associated with `r abs(coef(multifit)['atemp'])` unit increase in `cnt`.  
+    
+##### **(c)** Which predictors are associated with increased ridership?  Which predictors are associated with decreased ridership?
+  
+- Predictors associated with an increase in ridership: `r names(which(coef(multifit)>0))`
+
+- Predictors associated with an decrease in ridership: `r names(which(coef(multifit)<0))`
+    
+##### **(d)** Which predictors are statistically significant at the 0.05 level?
+   
+- Predictors that are statistically significant at the 0.05 level : `r names(which(summary(multifit)$coefficients[,4]<0.05))`
+
+- Predictors that are NOT statistically significant at the 0.05 level : `r names(which(summary(multifit)$coefficients[,4]>0.05))`
+
+
+<hr>
+
+### Problem 3:  Dealing with collinearity: New Material
+
+> As you probably already know from your most recent regression class, *collinear* or *highly correlated* predictors can make interpreting regression coefficients problematic.  In this problem you will try to diagnose and address collinearity issues in the data.
+
+##### **(a)** Use the `pairs()` function on the set of variables used in **Problem 2** to check if any of the predictor variables are highly correlated with one another.  Your pairs plot should have scatterplots above the diagonal, and correlations below the diagonal.
+
+```{r}
+# Function taken from ?pairs Example section.  
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- abs(cor(x, y))
+    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- paste0(prefix, txt)
+    if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+    text(0.5, 0.5, txt, cex = pmax(1, cex.cor * r))
+}
+
+vars <- c("temp", "atemp","mnth", "hum","windspeed")
+pairs(bikes[,vars], lower.panel = panel.cor)
+
+```
+
+**Hint**: A complete example of how to use the `pairs()` command to construct such plots may be found on Canvas
+
+##### **(b)** Are any of the predictors highly correlated?  Are you surprised that these predictors are highly correlated, or can you think of a reason for why it makes sense that they should be correlated?
+
+- The predictors `temp` and `atemp` are highly correlated, almost exactly. This is not surprising, as they are both measures of temperature. 
+
+##### **(c)** Refit your regression model, but this time **omit** the `temp` variable.  Display the coefficients table for this model.
+
+```{r}
+betterfit <- update(multifit, . ~ . - temp)
+coef(summary(betterfit))
+```
+
+##### **(d)** What is the coefficient of `atemp` in this new model?  Is it very different from the `atemp` coefficient estimated in part **(b)**?  Is it statistically significant?  Explain your findings.
+
+- The coefficient of `atemp` in this model is `r coef(betterfit)['atemp']`. This is very different from `r coef(multifit)['atemp']`, the coefficient estimate in part B. In the new model, `atemp` is statistically significant with a p-value of `r summary(betterfit)$coefficients[,4]['atemp']` which is much lower than 0.05
+
+

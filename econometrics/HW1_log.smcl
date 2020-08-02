@@ -1,0 +1,26 @@
+{smcl}
+{com}{sf}{ul off}{txt}{.-}
+      name:  {res}<unnamed>
+       {txt}log:  {res}C:\Users\Lara\Documents\Econometrics\HW1\HW1_log.smcl
+  {txt}log type:  {res}smcl
+ {txt}opened on:  {res}22 Jan 2020, 11:45:22
+
+{com}. do "C:\Users\Lara\Documents\Econometrics\HW1\NHIS2009_hicompare_.do"
+{txt}
+{com}. *** Metrics
+. *** Table 1.1
+. *** goal: make table of health outcomes and characteristics by insurance status ***
+. 
+. * by Georg Graetz, August 6, 2013
+. * modified lightly by Gabriel Kreindler, June 13, 2014
+. * modified lightly by Jon Petkun, January 2, 2015
+. 
+. pause on
+{txt}
+{com}. clear all
+{res}{txt}
+{com}. set more off
+{txt}
+{com}. cap log close
+{smcl}
+{com}{sf}{ul off}

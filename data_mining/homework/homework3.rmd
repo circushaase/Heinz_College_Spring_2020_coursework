@@ -1,0 +1,290 @@
+---
+title: "Homework 3: Variable selection in Regression"
+author: "Lara Haase (Lhaase)"
+Important!: install.packages(c("glmnet", "leaps"))
+output: 
+  html_document:
+    toc: true
+    toc_depth: 5
+    theme: paper
+    highlight: tango
+---
+
+##### This homework is due by **11:59PM on Monday, April 13**.  
+
+### Preamble: Loading packages and data
+
+**DO NOT CHANGE ANYTHING ABOUT THIS CODE!**
+
+```{r}
+library(ggplot2)
+library(ISLR)
+library(glmnet)
+library(leaps)  # needed for regsubsets
+library(boot)   # needed for cv.glm
+library(tidyr)
+
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+options(scipen = 4)
+
+# Online news share count data
+set.seed(54108118)
+online.news <- read.csv("http://www.andrew.cmu.edu/user/achoulde/95791/data/online_news.csv")
+# subsample the data to reduce data size
+num.noise <- 50
+news <- data.frame(online.news, 
+                   matrix(rnorm(num.noise * nrow(online.news)), 
+                            nrow = nrow(online.news))
+                   )
+# Extract covariates matrix (for lasso)
+news.x <- as.matrix(news[, -which(names(news) == "shares")])
+# Extract response variable (for lasso)
+news.y <- news$shares
+```
+
+### Data dictionary
+
+If you want to learn more about this data set, you can have a look at the data dictionary provided here: [Data dictionary for news share data](http://www.andrew.cmu.edu/user/achoulde/95791/data/OnlineNewsPopularity.names.txt).
+
+### Problem 1
+
+> This question walks you through a comparison of three variable selection procedures you have learned.  
+
+##### **(a)** Use the `glm` command to fit a linear regression of `shares` on all the other variables in the `news` data set.  Print the names of the predictors whose coefficient estimates are statistically significant at the 0.05 level.  Are any of the "noise" predictors statistically significant? (Recall that "noise" predictors all have variable names of the form X#.)
+
+```{r}
+glm_fit<- glm(shares ~ ., data=news)
+#summary(glm_fit)
+#coef(summary(glm_fit))
+names(which(coef(summary(glm_fit))[,4]<0.05))
+
+```
+
+<font color="#157515">
+
+- Yes, X19 and X35 are "noise" predictors that have statistical significance.
+
+</font>
+
+
+**Hint:** To access the P-value column of a fitted model named `my.fit`, you'll want to look at the `coef(summary(my.fit))` object.  If you are new to R, you may find [the following section of the 94-842 note](http://www.andrew.cmu.edu/user/achoulde/94842/lectures/lecture08/lecture08-94842.html#exploring-the-lm-object) helpful.  
+
+##### **(b)** Use the `cv.glm` command with 10-fold cross-validation to estimate the test error of the model you fit in part (a).  Repeat with number of folds `K = 2, 5, 10, 20, 50, 100` (use a loop).  
+
+##### Calculate the standard deviation of your CV estimates divided by the mean of the estimates.  This quantity is called the [coefficient of variation](https://en.wikipedia.org/wiki/Coefficient_of_variation).  Do the error estimates change much across the different choices of $K$?
+
+```{r, cache = TRUE, warning=FALSE}
+cv<- vector(mode = "numeric")
+i = 1
+for (k in c(2, 5, 10, 20, 50, 100)){
+  cv[i]<- cv.glm(news, glm_fit, K=k)$delta[1]
+  i = i+1
+}
+
+coef_var<- sd(cv)/mean(cv)
+
+
+```
+
+<font color="#157515">
+
+- The estimated errors across the different K folds are `r cv`. The larger folds of 10 and above have fairly similar error estimates, while the smaller folds of 2 and 5 have significantly larger error estimates.
+</font>
+
+**Note**: This loop may take a few minutes to run.  Please see the argument cache = TRUE in the header to prevent the code from needing to re-execute every time you knit.  This code chunk will re-execute only if the code it contains gets changed.  
+
+##### **(c)** The code below produces estimates of test error using the validation set approach.  Run this code 50 times (put the code in a loop).  Calculate the standard deviation of the estimates divided by the mean of the estimates.  Are the answers you get more or less variable than your answers from part **(b)**?
+
+```{r, cache = TRUE, warnings = FALSE}
+####
+## Modify the code below as necessary to answer the question.
+####
+val_set<- vector()
+i=1
+for (n in 1:50){
+  # Form a random split
+  rand.split <- sample(cut(1:nrow(news), breaks = 2, labels = FALSE))
+  # Fit model on first part
+  news.glm.train <- glm(shares ~ ., data = news[rand.split == 1,])
+  # Predict on the second part
+  news.glm.pred <- predict(news.glm.train, newdata = news[rand.split == 2, ])
+  # Calculate MSE on the second part
+  val_set[i]<- mean((news$shares[rand.split == 2] - news.glm.pred)^2)
+  i = i+1
+}
+
+val_coef_var<- sd(val_set)/mean(val_set)
+
+sd(cv)
+sd(val_set)
+```
+
+<font color="#157515">
+
+- The standard deviation of the error estimates of the k-fold cross validation method is `r sd(cv)` and the standard deviation divided by the mean is `r sd(cv)/mean(cv)`. Alternatively the error estimates of the 50 runs of the validation set approach have a standard deviation of `r sd(val_set)` and the standard deviation divided by the mean is `r sd(val_set)/mean(val_set)`. So the raw level of the standard deviation is much higher for the validation set than the k-fold cross validation, but even when controlling for the size of the mean, the varience is clear still much higher for the validation set method.
+
+</font>
+
+### Best subset selection
+
+##### **(d)**  The code below performs Best Subset Selection to identify which variables in the model are most important.  We only go up to models of size 5, because beyond that the computation time starts to get excessive. 
+
+##### Which variables are included in the best model of each size?  (You will want to work with the `summary(news.subset)` or `coef(news.subset, id = )` object to determine this.)  Are the models all nested?  That is, does the best model of size k-1 always a subset of the best model of size k?  Do any "noise predictors" appear in any of the models?
+
+```{r}
+set.seed(12310)
+
+# Get a smaller subset of the data to work with
+# Use this ONLY for problem (d).
+news.small <- news[sample(nrow(news), 2000), ]
+```
+
+```{r, cache = TRUE}
+# Best subset selection
+news.subset <- regsubsets(shares ~ .,
+               data = news.small,
+               nbest = 1,    # 1 best model for each number of predictors
+               nvmax = 5,    # NULL for no limit on number of variables
+               method = "exhaustive", really.big = TRUE)
+
+# Add code below to answer the question
+
+coef(news.subset, id= 1)
+coef(news.subset, id =2)
+coef(news.subset, id = 3)
+coef(news.subset, id = 4)
+coef(news.subset, id = 5)
+```
+<font color="#157515">
+
+- The variable included in the best model with one variable is `r names(coef(news.subset, id= 1))`. 
+- The variables included in the best model with two variables are `r names(coef(news.subset, id= 2))`. 
+- The variables included in the best model with three variables are `r names(coef(news.subset, id= 3))`. 
+- The variables included in the best model with four variables are `r names(coef(news.subset, id= 4))`. 
+- The variables included in the best model with five variables are `r names(coef(news.subset, id= 5))`. 
+The models are all nested and there are no "noise predictors".
+
+</font> 
+
+### Forward Stepwise Selection
+
+##### **(e)**  Modify the code provided in part (d) to perform Forward stepwise selection instead of exhaustive search.  There should be no limit on the maximum size of subset to consider.  
+
+**NOTE:  You will need to swap out `news.small` for the full `news` data.  You should not use `news.small` for anything other than part (d)**
+
+```{r}
+news.subset.fwd <- regsubsets(shares ~ .,
+               data = news,
+               nbest = 1,    # 1 best model for each number of predictors
+               nvmax = NULL,    # NULL for no limit on number of variables
+               method = "forward", really.big = TRUE)
+
+coef(news.subset.fwd, id = 5)
+
+```
+
+> Note: Parts (f) - (k) all refer to the results produced by Forward stepwise selection.  
+
+##### **(f)** For models of size 1:12, display the variables that appear in each model.  Are the models all nested?  Do any "noise predictors" appear in any of the models?
+
+```{r}
+for (n in 1:12){
+  print(c("Model", n))
+  print(names(coef(news.subset.fwd, id= n)))
+}
+```
+
+<font color="#157515">
+
+- All of the models are nested and none of the "noise predictors" appear in the models.
+
+</font>
+
+##### **(g)** When you run `summary()` on a regsubsets object you get a bunch of useful values.  Construct a plot showing R-squared on the y-axis and model size on the x-axis.  Use appropriate axis labels.  Does R-squared always increase as we increase the model size?  Explain.
+
+```{r}
+var_num<- 1:104
+rsqrd<- summary(news.subset.fwd)$rsq
+
+df <-data.frame(var_num, rsqrd)
+
+qplot(data = df, x = var_num, y = rsqrd,
+      xlab = "Number of Variables in Model", ylab = "R-Squared")  +ggtitle(("Variables vs R-Squared"))
+
+```
+
+<font color="#157515">
+
+- Yes, the R-Squared always increased as the number of variables increases. This is because as more variables are added, more of the variance is accounted for. Though at a certain point, the increase in R-squared is very minimal.
+</font>
+
+##### **(h)**  Construct a plot showing Residual sum of squares on the y-axis and model size on the x-axis.  Does the RSS always decrease as we increase the model size?  Explain.
+
+```{r}
+resids<- summary(news.subset.fwd)$rss
+
+df_rss <-data.frame(var_num, resids)
+
+qplot(data = df_rss, x = var_num, y = resids,
+      xlab = "Number of Variables in Model", ylab = "Residual Sum of Squares")  +ggtitle(("Variables vs Residual SS"))
+```
+
+<font color="#157515">
+
+- - Yes, the residual sum of squares always decreases as the number of variables increases. This is because as more variables are added, more of the variance is accounted for. Though at a certain point, the decrease in residuals is very minimal.
+
+
+</font>
+
+##### **(i)** [2 points] Construct a plot showing AIC (aka Mallows Cp) on the y-axis and model size on the x-axis.  Is the curve monotonic?  Explain.  What model size minimizes AIC?  How many "noise predictors" get included in this model?
+
+```{r}
+aic_var<- summary(news.subset.fwd)$cp
+
+df_aic <-data.frame(var_num, aic_var)
+
+qplot(data = df_aic, x = var_num, y = aic_var,
+      xlab = "Number of Variables in Model", ylab = "AIC")  +ggtitle(("AIC"))
+
+best_aic <- match(min(df_aic$aic_var), df_aic$aic_var)
+
+names(coef(news.subset.fwd, id= 40))
+
+```
+
+<font color="#157515">
+
+- No, the curve is not monotonic because AIC penalizes for both errors AND increases variables. The model with the best AIC has `r best_aic`. There are 9 "noise predictors" in this model.
+
+</font>
+
+##### **(j)** Construct a plot showing BIC on the y-axis and model size on the x-axis.  Is the curve monotonic?  Explain.  What model size minimizes BIC?  How many "noise predictors" get included in this model?
+
+```{r}
+bic_var<- summary(news.subset.fwd)$bic
+
+df_bic <-data.frame(var_num, bic_var)
+
+qplot(data = df_bic, x = var_num, y = bic_var,
+      xlab = "Number of Variables in Model", ylab = "BIC")  +ggtitle(("BIC"))
+
+best_bic <- match(min(df_bic$bic_var), df_bic$bic_var)
+
+names(coef(news.subset.fwd, id= 11))
+```
+
+<font color="#157515">
+
+- No, the curve is not monotonic because BIC penalizes for both errors AND increases variables. The model with the best BIC has `r best_bic`. There are no "noise predictors" in this model.
+
+
+</font>
+
+##### **(k)** [2 points]  Compare the models selected by AIC and BIC.  Is one a subset of the other?  Which criterion selects the smaller model?  Does that criterion always result in a smaller model, or is does this happen just by coincidence on the `news` data?  Explain.
+
+<font color="#157515">
+
+-The BIC has a subset of variables in the AIC model. The BIC model selects a smaller model. This will always be the case because BIC always places a higher penality on more complex models than AIC.
+</font>
+
