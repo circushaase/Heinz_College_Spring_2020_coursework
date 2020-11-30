@@ -1,0 +1,761 @@
+---
+title: "Identifying Gaps in Assisted Housing"
+output: html_document
+author: "Michael Rath, Nicholas Maier, and Lara Haase"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center")
+```
+
+Final Project Team #13
+
+Michael Rath - mjrath  
+Nicholas Maier - nmaier  
+Lara Haase - lhaase  
+
+# Project Objective
+
+### Data set:
+Housing Affordability Data System, published by the U.S. Department of Housing and Urban Development
+
+“A set of housing-unit level datasets that measures the affordability of housing units and the housing cost burdens of households, relative to area median incomes, poverty level incomes, and Fair Market Rents.” - from the data documentation (available at https://www.huduser.gov/portal/datasets/hads/HADS_doc.pdf )
+
+### Objective:
+We used the variable “FMTASSISTED”, which indicated whether a household receives housing assistance or not, as our dependent or predicted variable. The intention of our analysis is to use the data available to create predictive models able to determine whether a household is likely to receive housing assistance. The value proposition we intend to develop, either for public or private organizations, is the ability to detect households that may qualify for housing assistance, but may not be accessing the available services.
+
+In the end we hope to identify two groups of people. The first and most important is those who are currently not recieving housing assistance that could use it. This could allow HUD or other organizations to proactively target these individuals to give them the help that they need. The second group would be individuals who are receiving assistance that potentially may not need it. If these individuals are taking advantage of the system, that could be a non-effective use of resources. Identifying these individuals could be useful for places like HUD to examine their cases more closely to be proper stewards of housing assistance resources.
+
+
+# Exploratory Data Analysis
+
+### Loading and Cleaning Data
+```{r include=FALSE}
+# Library Setup and Potential Package Installation
+
+knitr::opts_chunk$set(echo = TRUE)
+
+#may need to install packages for these three libraries
+#install.packages("Hmisc")
+#install.packages("corrplot")
+library(Hmisc)
+library(corrplot)
+library(dplyr)
+library(ggplot2)
+library(ISLR)
+library(leaps) # for linear regression best subset selection
+library(boot) # for logistic regression cross-validation
+library(glmnet) # to apply lasso to limit terms in logistic model
+library(kableExtra) # for confusion matrix formatting
+library(rpart)
+library(tree)
+library(gbm)
+library(rpart.plot)
+library(rattle)
+
+```
+
+
+```{r include=FALSE}
+housingData <- read.table("thads2013n.txt", header = TRUE, sep = ",", stringsAsFactors = FALSE)
+
+housingClean <- subset(housingData, FMTASSISTED != ".")
+
+housingClean <- subset(housingClean, NUNITS != "-7")
+housingClean <- subset(housingClean, BURDEN != "-1")
+
+housingClean$MOBILEHOME <- housingClean$FMTSTRUCTURETYPE
+housingClean$MOBILEHOME <- ifelse(housingClean$MOBILEHOME == "6 Mobile Home", 1, 0)
+
+housingClean$URBAN <- housingClean$FMTMETRO3
+housingClean$URBAN <- ifelse(housingClean$URBAN == "Central City", 1, 0)
+
+#remove unhelpful/uninterpretable variables
+housingClean <- housingClean[-c(1,3,7,9,13:17,23,25,26,29:31,33,34,36:38,40:42,46,48,50:68,70,72,74,76:83,86:88,91:95,97:99)]
+
+#refactor variables that need it
+housingClean <- mutate(housingClean,
+                       FMTZADEQ = as.factor(housingClean$FMTZADEQ),
+                       FMTCOSTMEDRELPOVCAT =as.factor(housingClean$FMTCOSTMEDRELPOVCAT),
+                       FMTINCRELPOVCAT = as.factor(housingClean$FMTINCRELPOVCAT),
+                       FMTCOSTMEDRELFMRCAT = as.factor(housingClean$FMTCOSTMEDRELFMRCAT),
+                       FMTCOSTMEDRELFMRCAT = recode_factor(FMTCOSTMEDRELFMRCAT,
+                                                          "1 LTE 50% FMR" = "Less Than 50% FMR",
+                                                          "2 50.1 - 100% FMR" = "50.1 - 100% FMR",
+                                                          "3 GT FMR" = "Greater Than FMR"
+                                                           ),
+                       FMTINCRELFMRCAT = recode_factor(FMTINCRELFMRCAT,
+                                                          "1 LTE 50% FMR" = "Less Than 50% FMR",
+                                                          "2 50.1 - 100% FMR" = "50.1 - 100% FMR",
+                                                          "3 GT FMR" = "Greater Than FMR"
+                                                           ),
+                       FMTASSISTED = recode_factor(FMTASSISTED,
+                                                   "0 Not Assisted" = "Not Assisted",
+                                                   "1 Assisted" = "Assisted")
+)
+
+```
+
+The data exploration, understanding, and processing phase of the project was significant, as the dataset consists of `r nrow(housingData)` observations of `r ncol(housingData)` predictors. The first part of our process was to establish which observations and vaariables would be kept for the next phase of data analysis.
+
+The first stage resulted in the removal of `r nrow(housingData) - nrow(housingClean)` observations of data that did not have our target variable of interest, FMTASSISTED. Because these observations had no value for FMTASSISTED, they would be unusable for our analysis.
+
+The next part was a lengthy search through the 98 variables that were not FMTASSISTED to determine which should be included. Ultimately we ended up with 34 variables left. The 60 variables in the inital screen were removed for falling into one of three groups.
+
+- Simply Transforming Other Data: This category includes over 20 predictors such as COST06, COST 08, COST12, COST06RELAMIPCT, COST08RELAMIPCT and more. These variables are only transformations of existing data using different rates. For example, COSTO6RELAMIPCT is just the COSMEDRELAMIPCT at a 6% interest rate, while COST08AMIPCT is that same variable but at an 8% interest rate. While these may have been valuable to some studies, they had no bearing here (they would have had perfect collinearity in any case) and if necessary, could have been recreated by our team.
+- Noninterpretable Predictors: This category includes variables such as WEIGHT, TENURE, TYPE, and others. These variables have values whose meanings cannot be understood. Although there is a data dictionary, it is not detailed enough for every variable. For example, TYPE has numeric values 1-9, but nowhere is it described what each number represents. This is unfortunate, but without an alternative, we made the decision to remove them as we couldn't be sure what they meant or how the data should be treated. As an example, should TYPE be a categorical discreete variable or a continuous one? Without knowing that, we are unable to evaluate it properly.
+- Redundancy of Information: 25 variables fall into this category. 25 variables in the dataset were FMT versions of another predictor, which means they had been formatted and treated in some way. As an example, BUILT and FMTBUILT shared information but displayed it in similar ways. BUILT gives the year a housing unit is built (eg. 1983), whereas FMTBUILT groups things into decade in which it was produced and the value would be recored as "1980-1989." For something like BUILT, being able to treat it as a continous variable was more valuable, so we elected to discard FMTBUILT. There were other scenarios where the FMT version was the only one with an interpretable form of the infromation. For example, FMTSTRUCTRETYPE labeled the kind of structure (eg. "Single Family"), whereas STRUCTRETYPE did not.
+- Same Values: This category includes variables such as VALUE, OWNRENT, VACANCY, STATUS, and more, which had only one value for the entirity of our data set. For example, VALUE is set to -6 when there is a non-null value for if the observation is specifically classified as assisted or not assisted. In our selection, all data is one of those two groups, so all have a -6 for VALUE.
+
+# Exploratory Data Analysis
+
+## Exploration with Plots
+
+This first plot exemplifies our problem definition, to attempt to identify characteristics of households that are likely in need of assistance, but are not recieving it. The plot compares income (relative to Area Median Income) to housing costs (at median interest relative to area median income). The plots are broken into households that receive assistance vs those that do not. But unfortunately the plots are not particularly different and have quite a bit of overlap.
+
+```{r echo=FALSE}
+ggplot(data = housingClean, mapping=aes(x=INCRELAMIPCT , y=ZSMHC )) + geom_point() + geom_smooth(method = 'lm', color = 'red') + 
+  facet_wrap('FMTASSISTED') + 
+  labs(x ='Household Income relative to AMI (percent)' , y = 'Monthly housing costs', title = 'Household Income vs Housing Cost, by assistance')
+
+```
+
+In that plot we can see that there are a few households that are behaving as outliers. To highlight this, below we have plotted a histogram of housing costs (stacked with the assisted variable for the color).
+
+```{r echo=FALSE}
+#histogram of housing costs
+ggplot(data = housingClean, mapping=aes(x= ZSMHC, fill = FMTASSISTED)) + geom_histogram(binwidth = 100) + labs(x = 'Monthly Housing Costs', title = 'Distribution of Monthly Housing Costs (colored by Assistance)')
+```
+
+We decided to remove these outliers for the rest of our analyses.
+
+```{r include = FALSE}
+# restrict data to households with monthly housing costs under $4000
+housingClean = housingClean[which(housingClean$ZSMHC < 4000),]
+
+```
+
+
+### How `AGE` affects whether a household is assisted:
+
+```{r echo=FALSE}
+#Age vs Assistance
+ggplot(housingClean, aes(AGE1, fill = FMTASSISTED)) + geom_histogram(binwidth = 1, position = "fill") + labs(x = 'Age', y='Probability', title = 'Density Plot of Assistance as a factor of Age')
+
+```
+
+This plot shows that people are more likely to receive housing assistance when there are very young adults (about 16-17 years old) and after the age of about 65 year old. 
+### Size of Household
+```{r echo=FALSE}
+# Box plot of Number of People in household vs Assisted
+boxplot(PER~FMTASSISTED,data= housingClean, main="Household Size vs Assitance",
+   xlab="Assistance Status", ylab="# of People in Household") 
+
+```
+
+This plot shows the distribution of the number of people in the households, broken up by assistance status. There are interesting insights that contradict our assumptions about assisted households, in that they tend to be smaller (just 1 person) than unassisted households (2 people). This may be a result of two or more people living together having an easier time pooling resources to share housing costs. Other insights are unclear without deeper analysis. 
+
+### Income Effects of Assistance status
+
+```{r echo=FALSE}
+# Income (HH Income relative to AMI, categorized) vs Assisted 
+#make subset of uncleaned data to use income categorization (and Housing cost categorization in the follow plot)
+df= subset(housingData, FMTASSISTED != ".")
+
+ggplot(df, aes(INCRELAMICAT, fill = FMTASSISTED)) + geom_histogram(binwidth = 1, position = "fill") + labs(x = 'Income grouping', y='Probability', title = 'Density Plot of Assistance as a factor of Income')
+```
+
+This plot shows that as households incomes increase, the likelihood that they receive assistance is lower, which is quite intuitive. 
+
+### Housing Cost Effects on Assistance status
+
+```{r echo=FALSE}
+ggplot(housingClean, aes(ZSMHC, fill = FMTASSISTED)) + geom_histogram(binwidth = 100, position = "fill") + labs(x = 'Monthly Housing Costs', y='Probability')
+```
+
+This plot shows the trend that households with lower housing costs are more likely to receive assistance.
+
+### Income distribution broken up by Assistance Status
+
+```{r echo=FALSE}
+#restrict data to INCRELAMIPCT < 400 to make plot easier to view
+df = housingClean[which(housingClean$INCRELAMIPCT < 400),]
+ggplot(df, aes(INCRELAMIPCT, fill = FMTASSISTED)) + geom_density(alpha=0.5) + labs(x = 'Income', y='Probability')
+```
+
+This plot shows that households with lower income are more likely to be assisted.
+
+
+Besides the plots shown, other exploratory analyses included the following, but did not show any particular insights or useful interactions:  
+Age vs Monthly Housing Cost  
+MOBILEHOME status vs  Assistance  
+Housing Adequacy vs Assistance  
+Housing Adequacy vs Income  
+Urban status vs Assistance  
+Urban status vs Income and Housing Costs  
+
+## Assessment of Mulit-collinearity
+
+To eliminate redundant variables, and prepare the data for logistic regression, we checked all continuous variables in our "cleaned" data set for collinearity. 
+
+```{r, cache = TRUE, fig.width = 10, fig.height = 6}
+#restrict data to only continuous variables
+cont.data = housingClean[,c(1:27,34,35)]
+
+#create correlation matrix (with p-value matrix)
+corrmat <- rcorr(as.matrix(cont.data))
+
+# Create corrlation plot, insignificant correlations are left blank
+corrplot(corrmat$r, type="upper", order="hclust", 
+         p.mat = corrmat$P, sig.level = 0.01, insig = "blank")
+
+```
+
+After computing correlation coefficients of all variables, we discovered two pairs of collinear variables:  
+`IPOV` + `PER` = `1.00`  
+`BEDRMS` + `ROOMS` = `0.99`
+
+as well as three groupings of collinear variables, which are each visualized, with specific coefficients listed.
+
+
+### Variables related to Area median income and Fair Market Rate
+
+`FMR`, `L50`, `LMED`, `GLMED`, `APLMED`, `ABLMED`  
+
+```{r}
+#restrict data to "Median Income" related variables
+lmed.data = housingClean[,c('FMR', 'L50', 'LMED', 'GLMED','APLMED','ABLMED')]
+lmed.corr <- rcorr(as.matrix(lmed.data))
+
+# Plot correlation viz where insignificant correlations are left blank
+corrplot(lmed.corr$r, type="upper", order="hclust", p.mat = lmed.corr$P, sig.level = 0.01, insig = "blank")
+
+```
+
+LMED + GLMED = 1.00  
+FMR + L50 = 0.89    
+FMR + APLMED = 0.86  
+FMR + ABLMED = 0.91  
+L50 + APLMED = 0.98  
+L50 + ABLMED = 0.89  
+APLMED  + ABLMED = 0.93  
+APLMED + GLMED =  0.71  
+APLMED + LMED = 0.71  
+LMED + ABLMED = 0.73  
+LMED + FMR = 0.41  
+LMED + L50 = 0.59  
+
+From this grouping we chose to keep `APLMED` (Median Income Adjusted for # of Persons) because it is representative of this whole grouping of collinear variables, since it is the most correlated with other variables in the group. 
+We also decided to keep `FMR` because it is reasonably different in its definition, and its coefficient with `APLMED` of 0.86 is not quite over the threshold of 0.9. 
+We also chose to keep `L50` for similar reasons, as its definition is also different. 
+
+### Housing Cost Variables
+
+`COSTMED`, `COSTMedRELAMIPCT`, `COSTMedRELPOVPCT`, `COSTMedRELFMRPCT`, `ZSMHC`
+
+```{r}
+#restrict data to "Cost" related variables
+costmed.data = housingClean[,c('COSTMED', 'COSTMedRELAMIPCT', 'COSTMedRELPOVPCT', 'COSTMedRELFMRPCT', 'ZSMHC')]
+costmed.corr <- rcorr(as.matrix(costmed.data))
+
+# Plot correlation viz where insignificant correlations are left blank
+corrplot(costmed.corr$r, type="upper", order="hclust", p.mat = costmed.corr$P, sig.level = 0.01, insig = "blank")
+
+```
+
+ZSMHC + COSTMED = 1.00   
+ZSMHC + COSTMedRELAMIPCT = 0.96  
+ZSMHC + COSTMedRELPOVPCT = 0.93  
+ZSMHC + COSTMedRELFMRPCT = 0.92  
+COSTMED + COSTMedRELAMIPCT = 0.96  
+COSTMED  + COSTMedRELPOVPCT = 0.93  
+COSTMED  + COSTMedRELFMRPCT = 0.92  
+COSTMedRELAMIPCT  + COSTMedRELPOVPCT = 0.96  
+COSTMedRELAMIPCT  + COSTMedRELFMRPCT = 0.98  
+COSTMedRELPOVPCT  + COSTMedRELFMRPCT = 0.96 
+
+From this grouping, we chose to keep `ZSMHC` because, as seen in the first exploratory plots, this variable shows a stark gap between most of the households, and a few outliers over $4000. Because of this we also chose to subset our data without these outlier points.
+
+
+### Income Variables
+
+`ZINC2`, `INCRELAMIPCT`, `INCRELPOVPCT`, `INCRELFMRPCT`  
+
+```{r}
+#restrict data to "Income" related variables
+income.data = housingClean[,c('ZINC2', 'INCRELAMIPCT', 'INCRELPOVPCT', 'INCRELFMRPCT')]
+income.corr <- rcorr(as.matrix(income.data))
+
+# Plot correlation viz where insignificant correlations are left blank
+corrplot(income.corr$r, type="upper", order="hclust", p.mat = income.corr$P, sig.level = 0.01, insig = "blank")
+
+```
+
+ZINC2 + INCRELAMIPCT = 0.97   
+ZINC2 + INCRELPOVPCT = 0.97  
+ZINC2 + INCRELFMRPCT = 0.96   
+INCRELAMIPCT + INCRELPOVPCT = 0.98  
+INCRELAMIPCT + INCRELFMRPCT = 0.99  
+INCRELPOVPCT + INCRELFMRPCT = 0.98 
+
+From this grouping, we chose to keep `INCRELAMIPCT` because according to the data set documentation, housing cost relative to AMI is the most common standard used in affordability discussions of the three standards provided (fair market rent - FMR, area median income - AMI, and poverty-level income - POV).
+
+## Our final data subset
+
+Based on our understanding of the data gained from exploratory analysis and collinearity checked, we have limited our data to 18 variables that we will use to fit predictive models.
+
+```{r}
+housingClean = housingClean[,c("AGE1", "REGION", "FMR", "L50", "BEDRMS", "BUILT", "NUNITS", "PER", "ZSMHC", "UTILITY", "OTHERCOST", "BURDEN", "APLMED", "INCRELAMIPCT", "FMTZADEQ", "FMTASSISTED", "MOBILEHOME", "URBAN")]
+
+
+```
+
+
+# Model Development
+
+```{r, include=FALSE}
+#### Define ROC curves function
+
+# Define a function which generates a dataframe containing all values for an ROC curve.
+# The inputs are a vector (e.g., a dataframe column) containing the predicted probabilities
+# of each household being assisted, a vector containing the true class of each household
+# (1 = assisted, 0 = unassisted), and the model name (as it should be displayed in the ROC graph)
+roc.curve = function(predicted.probabilities, true.classes, model.name.string){
+  roc.df <- data.frame(cutoff = c(0, 1), TPR = c(1, 0), FPR = c(1, 0), model = model.name.string)
+  for (i in 1:99){
+    cutoff <- i/100
+    classifs <- as.numeric(predicted.probabilities >= cutoff)
+    matr <- table(true.classes, classifs)/(sum(table(true.classes, classifs))/100)
+    tp <- matr[2,2]
+    fp <- matr[1,2]
+    tn <- matr[1,1]
+    fn <- matr[2,1]
+    tpr <- tp/(tp + fn)
+    fpr <- fp/(fp + tn)
+    roc.df <- rbind(roc.df, c(cutoff, tpr, fpr, model.name.string))
+  }
+  roc.df <- mutate(roc.df,
+                   cutoff = as.numeric(cutoff),
+                   TPR = as.numeric(TPR),
+                   FPR = as.numeric(FPR))
+  return(roc.df)
+}
+```
+
+```{r, include=FALSE}
+#### Define a function to generate confusion matrix given a model's probability predictions
+
+conf.matrix = function(predicted.probabilities, true.classes, model.name.string){
+  cutoff <- 0.5
+  classifs <- as.numeric(predicted.probabilities >= cutoff)
+  count.matr <- table(true.classes, classifs)
+  tpc <- count.matr[2,2] # Calculate counts for table
+  fpc <- count.matr[1,2]
+  tnc <- count.matr[1,1]
+  fnc <- count.matr[2,1]
+  count.matr <- data.frame(c(tnc, fnc, tnc + fnc),
+                           c(fpc, tpc, fpc + tpc),
+                           c(tnc + fpc, fnc + tpc, sum(tnc, tpc, fnc, fpc)))
+  
+  perc.matr <- 100*count.matr/sum(count.matr[1:2,1:2])
+  misclass.rate <- perc.matr[2,1] + perc.matr[1,2]
+  
+  # Build combined counts & percents matrix by pasting together the values of each
+  col1 <- paste(count.matr[,1], ' (', round(perc.matr[,1], 0), '%)', sep = "")
+  col2 <- paste(count.matr[,2], ' (', round(perc.matr[,2], 0), '%)', sep = "")
+  col3 <- paste(count.matr[,3], ' (', round(perc.matr[,3], 0), '%)', sep = "")
+  final.matr <- data.frame('True class' = c("Not assisted", "Assisted", "Sum"),
+                           'Not assisted' = col1,
+                           'Assisted' = col2,
+                           'Sum' = col3)
+  final.matr <- kable(final.matr,
+                      align = c('l', 'c', 'c', 'c'),
+                      col.names = c("True class", "Not assisted", "Assisted", "Sum"),
+                      caption = paste(model.name.string,
+                                      " Model Confusion Matrix",
+                                      " (misclassification rate = ",
+                                      round(misclass.rate, 2),
+                                      "%)",
+                                      sep = "")) %>%
+    add_header_above(c(" " = 1, "Classification" = 2, " " = 1))
+  return(final.matr)
+}
+```
+
+```{r, include=FALSE}
+#### Define a function to identify false positives - households classified as assisted which do not actually receive assistance. Return an index vector of such households in housingClean
+
+false.positives = function(predicted.probabilities, true.classes){
+  cutoff <- 0.5
+  classifs <- as.numeric(predicted.probabilities >= cutoff)
+  false.pos.index <- which(classifs == 1 & housingClean$FMTASSISTED == "Not Assisted")
+  return(false.pos.index)
+}
+
+false.negatives = function(predicted.probabilities, true.classes){
+  cutoff <- 0.5
+  classifs <- as.numeric(predicted.probabilities >= cutoff)
+  false.neg.index <- which(classifs == 0 & housingClean$FMTASSISTED == "Assisted")
+  return(false.neg.index)
+}
+```
+
+### Linear Regression
+
+As a first step in analyzing the data, a set of simple linear regression classifiers was generated. Each model was calculated using a subset of the predictors, ranging from a single predictor to all available features in the dataset. For each model, the best set of predictors was selected to minimize the residual sum of squares using the "exhaustive" method, comparing all possible combinations. The plots below show four measures of model error plotted against the number of predictors used in the model. The best model identified by each error measure is highlighted in red.
+
+```{r, include=FALSE}
+#### Develop a preliminary linear regression model, to demonstrate that it is not adequate
+
+# Calculate best subsets linear regression models of the assisted housing indicator
+# using all available variables. Note that the outcome variable is not linear: the ranking determined
+# by linear regression will be used to assign classifications.
+regfit.full <- regsubsets(FMTASSISTED ~ ., data = housingClean, nvmax = length(names(housingClean)))
+reg.summary <- summary(regfit.full)
+```
+
+```{r echo=FALSE}
+#### Plot measures of the model's accuracy against the number of included variables
+
+# Identify the best model (# of variables) for each accuracy metric
+rss.min.point <- which.min(reg.summary$rss)
+adjr2.max.point <- which.max(reg.summary$adjr2)
+bic.min.point <- which.min(reg.summary$bic)
+cp.min.point <- which.min(reg.summary$cp)
+
+# Plot the values against the number of variables, highlighting the best model for each metric
+par(mfrow = c(2,2))
+plot(reg.summary$rss, xlab = "Number of Variables", ylab = "RSS", type = "b")
+points(rss.min.point, reg.summary$rss[rss.min.point], col = "red", cex = 2, pch = 20)
+plot(reg.summary$adjr2, xlab = "Number of Variables", ylab = "Adjusted R-squared", type = "b")
+points(adjr2.max.point, reg.summary$adjr2[adjr2.max.point], col = "red", cex = 2, pch = 20)
+plot(reg.summary$bic, xlab = "Number of Variables", ylab = "BIC", type = "b")
+points(bic.min.point, reg.summary$bic[bic.min.point], col = "red", cex = 2, pch = 20)
+plot(reg.summary$cp, xlab = "Number of Variables", ylab = "Mallow's Cp", type = "b")
+points(cp.min.point, reg.summary$cp[cp.min.point], col = "red", cex = 2, pch = 20)
+```
+
+As shown above, RSS decreased with the inclusion of each additional predictor, as expected: the subset of predictors included in each model was selected to minimize the RSS. In contrast, the highest value of adjusted R-squared and the lowest values of Mallow's Cp and BIC were obtained for models containing `r adjr2.max.point`, `r cp.min.point`, and `r bic.min.point` out of the total `r rss.min.point` predictors, respectively, as these measures include a penalty for added complexity.
+
+The greatest adjusted R-squared value achieved by any of the models was only `r round(max(reg.summary$adjr2), 3)`, confirming that a linear model cannot effectively classify households as assisted or unassisted. This was expected due to the significant nonlinearities in the data which were discovered during exploratory data analysis. Of course, an adjusted R-squared value does not actually capture the misclassification rate - an ROC curve was constructed showing the model's performance given various cutoff points, for a more direct measure of the linear model's potential performance as a classifier. The ROC curve is included in the model comparison section.
+
+Due to the low accuracy of the linear models, additional steps to improve them, such as cross-validation, were not completed. However, they are discussed briefly here as a baseline comparison for the more appropriate models which were subsequently developed. Additionally, the five variables which produced the best linear regression model were identified for comparison to the variables found to be most significant in the subsequent models. Their names and coefficients are displayed below. The best subsets regression process was repeated using the "forward" and "backward" methods, and the same five variables were identified as the most important each time.
+
+```{r}
+#### Compare exhaustive best subset regressions with forward and backward best subset methods
+
+
+# Calculate the best subset regressions using the forward and backward methods, for comparison
+# to the best subset regressions calculated using the exhaustive method.
+regfit.fwd <- regsubsets(FMTASSISTED ~ ., data = housingClean, nvmax = 17, method = "forward")
+regfit.bkwd <- regsubsets(FMTASSISTED ~ ., data = housingClean, nvmax = 17, method = "backward")
+
+
+# Print the names of the top 10 variables selected using each method
+coef(regfit.full, 5)[-1]
+#names(coef(regfit.fwd, 5))
+#names(coef(regfit.bkwd, 5))
+```
+
+
+### Logistic Regression
+
+Next, a logistic regression model was developed to improve classification of the households. Logistic regression is a more appropriate classification method for the data for a few reasons: First, it allows us to directly estimate the probability of a given household being included in one of the assistance programs captured in the dataset, rather than simply classifying each based on a score as was done with the linear model. Second, and even more importantly, logistic regression does not rely on linear relationships between the predictors and the outcome, and it can easily handle the several categorical and binary predictors in the dataset [James, et al., Introduction to Statistical Learning, 7th ed.).
+
+First, a logistic regression was calculated using all of the available predictors, fitted to the entire data set. This complex and likely overfitted model serves as a reference of the most accurate possible logistic regression model which can be obtained from the data. A confusion matrix of the model's classifications is shown below, along with a table of the model's coefficients. The ROC curve for the model is also shown later in the report, for comparison with the other models.
+
+
+```{r, include=FALSE}
+#### Create a logistic regression model, following ISLR Lab 4.6.2, and extract probability estimates for an ROC curve
+
+# Create logistic regression model using all predictors
+glm.fits <- glm(data = housingClean, formula = FMTASSISTED ~ ., family = binomial)
+glm.summary <- summary(glm.fits)
+```
+
+```{r, include=FALSE}
+#### Get the probability estimates from the logistic model and plot the confusion matrix.
+# Predict probabilities that each household is assisted using the logistic regression model, for all households in the data set
+glm.probs <- predict(object = glm.fits, type = "response") # By not specifying test data, it automatically predicts on the fitted dataset
+log.matrix <- conf.matrix(glm.probs, housingClean$FMTASSISTED, "Full Logistic")
+```
+
+```{r echo=FALSE}
+log.matrix
+
+
+glm.summary$coefficients
+```
+
+Next, a few steps were taken to increase the robustness of the model. A lasso was applied to reduce the complexity of the model by limiting the number of terms, and the model was trained using only half of the dataset, which was randomly partitioned. The plot below shows the relationship between the cross-validation mean squared error and the level of complexity of the model, lambda.
+
+```{r}
+#### Use a lasso to limit the number of terms in the logistic regression model
+
+# !NOTE! This method converts all qualitative variables into dummy variables
+# Prepare a predictors matrix and an outcomes vector
+x <- model.matrix(FMTASSISTED ~ ., housingClean)[, -1]
+y <- as.numeric(housingClean$FMTASSISTED) - 1 # Convert assisted/not assisted to binary dummy
+
+# Split the data into a training set and a test set
+set.seed(1)
+train <- sample(1:nrow(housingClean), nrow(housingClean)/2)
+test <- (-train)
+y.test <- y[test]
+
+# Apply a lasso
+lambda.grid <- 10^seq(10, -2, length = 100)
+lasso.mod <- glmnet(x[train,], y[train], alpha = 1, lambda = lambda.grid, family = "binomial")
+# plot(lasso.mod)
+
+# Determine best lambda value to minimize misclassification rate (and hence, determine the best number of terms)
+cv.out <- cv.glmnet(x[train,], y[train], alpha = 1)
+#bestlam <- cv.out$lambda.min
+```
+
+```{r echo=FALSE}
+plot(cv.out)
+```
+
+A lambda value of 0.018 was selected, in order to reduce the number of terms to 10. The use of the lasso allows us to select the 10 variables which result in the lowest error rate. The confusion matrix is shown below, along with a table showing the coefficients of the 10 variables which were selected, with the variables which were removed from the model indicated by a dot.
+
+```{r}
+# !NOTE! This lambda value was selected manually to obtain a model containing only the 10 most important predictors.
+# The minimum cv error rate is obtained with all of the predictors included.
+lam <- 0.018
+lasso.mod <- glmnet(x, y, alpha = 1, lambda = lam, family = "binomial")
+```
+
+```{r}
+#### Extract probability predictions from the size-limited logistic regression model, to plot an ROC curve
+lasso.probs <- predict(lasso.mod, newx = x, s = lam, type = "response") # pull "response" values from model
+min.p <- min(lasso.probs)
+max.p <- max(lasso.probs)
+lasso.probs <- (lasso.probs - min.p)/(max.p - min.p) # Rescale response values to 0-1 scale for input into ROC function
+
+```
+
+```{r echo=FALSE}
+lasso.matrix <- conf.matrix(lasso.probs, housingClean$FMTASSISTED, "Logistic (10 predictors)")
+lasso.matrix
+```
+
+```{r}
+# Determine the number of terms in the size-limited logistic regression model
+lasso.coef <- predict(lasso.mod, type = "coefficients")
+#length(lasso.coef[lasso.coef != 0]) # 10 terms included in the model
+lasso.coef
+```
+
+
+### Classification Tree Approach
+
+#### Single Tree
+
+```{r echo=FALSE}
+tree.houses <- tree(FMTASSISTED ~ ., data = housingClean)
+
+partBaseTree <- rpart(tree.houses)
+fancyRpartPlot(partBaseTree)
+
+misclass.rate <- summary(tree.houses)$misclass[1]/summary(tree.houses)$misclass[2]
+```
+
+To begin with we ran a simple classification tree. This produced a fairly strong result, with a misclassification rate of only `r round(misclass.rate,4)*100`%. An initial concern was that the tree used so few predictors out of the overall set of `r ncol(housingClean)-1`, we may not be maximizing the predictive power we could be getting out fo the data. To assess that we created a complexity parameter plot to assess potential performance.
+
+```{r echo=FALSE} 
+plotcp(partBaseTree)
+```
+
+This plot shows us that the relative error rate fails to decrease substantially as we increase the number of predictors, which is why the tree automatically pruned itself to the level.
+
+As an additional check, we induced a lower complexity parameter to see what the tree would look like incorporating more factors and what the misclassifcation rate would be.
+
+
+```{r echo=FALSE}
+partLargeTree <- rpart(FMTASSISTED ~ ., data = housingClean, method = "class", cp=0.001)
+fancyRpartPlot(partLargeTree)
+
+class.pred1 <- table(predict(partLargeTree, type="class"), housingClean$FMTASSISTED)
+```
+
+We see here a significantly more complex classification tree, but a misclassification rate that is `r round((1-sum(diag(class.pred1))/sum(class.pred1)),4)*100`%, a rather minor improvement. This shows us why the initial classification tree automatically restricted itself to the size that it did. This helps to prevent overfitting from occuring and is a reasonable trade-off for a minor decrease in accuracy.
+
+#### Cross Validation & Pruning
+
+The next stage in addressing the issue of potential overfitting is to perform some cross validation.
+
+```{r echo=FALSE}
+set.seed(2)
+train <- sample(1:nrow(housingClean), nrow(housingClean)/2)
+housing.test <- housingClean[-train,]
+assist.test <- housingClean$FMTASSISTED[-train]
+
+tree.housing2 <- tree(FMTASSISTED ~ ., data = housingClean, subset = train)
+cv.tree.housing <- cv.tree(tree.housing2, FUN = prune.misclass)
+
+par(mfrow = c(1,2))
+plot(cv.tree.housing$size, cv.tree.housing$dev, type="b")
+plot(cv.tree.housing$k, cv.tree.housing$dev, type="b")
+
+```
+
+After perfoming this analysis, we can see that the deviation in our sample's deviation stops decreasing once the tree reaches an approximate size of 3. Our inital classificatoin tree used a size of `r summary(tree.houses)$size`, and so we see here an opportunity to prune the tree and reach similar results and still decrease the risks of overfitting. 
+
+```{r echo=FALSE}
+par(mfrow=c(1,1))
+prune.housing <- prune.misclass(tree.housing2, best = 3)
+
+plot(prune.housing)
+text(prune.housing, pretty=0)
+
+```
+
+We see now that by pruning the tree to a size of 3, the tree is extremely easy to interpret. The expectation based on the plot of deviation is that it should have a nearly identical misclassificaiton rate as our base tree.
+
+```{r echo=FALSE}
+tree.pred <- predict(prune.housing, housing.test, type="class")
+confusion.pred <- table(tree.pred, assist.test)
+confusion.pred
+```
+
+
+We validated that assumption by creating the confusion matrix above, which resulted in the expected outcome, which is one that has nearly identical performance to the initial tree. The misclassication rate for the pruned tree was `r round(1 - sum(diag(confusion.pred))/sum(confusion.pred),4)*100`%, compared to the unpruned rate of `r round(misclass.rate,4)*100`%, showcasing the essentially identical performance.
+
+#### Bagging and Boosting
+
+While the performance of a single pruned tree was good, we wanted to see if we could improve upon it in a way that does not result in overfitting. To do this, we want to complete the bagging and boosting process.
+
+To begin with, we will create a random forest with 5000 trees and see how it performs.
+
+```{r}
+set.seed(1)
+
+boost.housing <- gbm(FMTASSISTED ~ ., housingClean[train,], distribution = "gaussian", n.trees = 5000, interaction.depth = 5, cv.folds = 10)
+
+rf.model2 <- boost.housing
+rf.probs2 <- predict(rf.model2, housing.test, type = "response") # Extract "response" values from random forest
+min.p <- min(rf.probs2)
+max.p <- max(rf.probs2)
+rf.probs2 <- (rf.probs2 - min.p)/(max.p - min.p) # Rescale response values to 0-1 scale for input into ROC function
+rf.matrix2 <- conf.matrix(rf.probs2, housing.test$FMTASSISTED, "Initial GBM")
+rf.matrix2
+```
+
+It performs well and shows an improvement in misclassification rate, as you can see in the confusion matrix. This is because this model is undergoing the boosting process, allowing for 5,000 trees to be grown and tested. This results in an improved classification rate over the previous models because we're allowing for multiple different kinds of trees where we can sample multiple different predictors, even ones that may not initially seem to have much predictive power. 
+
+```{r echo=FALSE}
+best.iter <- gbm.perf(boost.housing, method="cv")
+```
+
+Even though we grew 5,000 trees, that does not mean that each subsequent tree improves accuracy. There is likely to be some number of trees between 1 and 5,000 that yields the best results. In this case, we can store the optimal number for minimizing errors and we can construct our final model using that number of trees.
+
+```{r echo=FALSE}
+set.seed(1)
+
+boost.housing.cv <- gbm(FMTASSISTED ~ ., housingClean[train,], distribution = "gaussian", n.trees = best.iter, interaction.depth = 5, cv.folds = 10)
+
+# Extract probability predictions from the random forest model, to plot an ROC curve
+
+rf.model <- boost.housing.cv
+rf.probs <- predict(rf.model, housing.test, type = "response") # Extract "response" values from random forest
+min.p <- min(rf.probs)
+max.p <- max(rf.probs)
+rf.probs <- (rf.probs - min.p)/(max.p - min.p) # Rescale response values to 0-1 scale for input into ROC function
+
+rf.matrix <- conf.matrix(rf.probs, housing.test$FMTASSISTED, "Optimized GBM")
+```
+
+
+```{r echo=FALSE}
+summary(boost.housing.cv)
+```
+
+
+The next part in evaluating the model is to see which factors are contributing most significantly to its success. We can see here that the monthly housing units (ZSMHC) and the income relative to area median income (INCRELAMIPCT) contribute most to the accuracy of the model. We can inspect their impact even closer here.
+
+```{r echo=FALSE}
+par(mfrow=c(1,2))
+plot(boost.housing, i="ZSMHC")
+plot(boost.housing, i="INCRELAMIPCT")
+```
+
+
+# Compare and Contrast
+
+```{r, include=FALSE}
+#### Extract probability predictions from the linear regression model, to plot an ROC curve
+
+# Function to extract predictions given the regression subsets object, the cases to be
+# predicted/classified, and the number of variables to include (id)
+predict.regsubsets = function (object, newdata, id, ...){
+  form = as.formula(object$call [[2]])
+  mat = model.matrix(form, newdata)
+  coefi = coef(object, id=id)
+  xvars = names(coefi)
+  mat[,xvars]%*%coefi
+  }
+
+# Generate linear predictions with the full linear regression model
+id.no <- length(reg.summary$rsq)
+regsubsets.predictions <- predict.regsubsets(regfit.full, housingClean, id.no)
+
+min.p <- min(regsubsets.predictions)
+max.p <- max(regsubsets.predictions)
+regsubsets.predictions <- (regsubsets.predictions - min.p)/(max.p - min.p) # Rescale response values to 0-1 scale for input into ROC function
+```
+
+The final step in our statistical analysis was to compare the generated models and select the best classifier. This not only means selecting the most accurate model, but verifying that it is making sound judgments based on logical variables which should be relevant to whether an individual receives housing assistance. This holistic comparison confirmed that the optimized random forest model was the best suited for the task.
+
+As discussed previously, each successive model demonstrated improvement in reducing the misclassification rate. Classification by linear regression (using an optimally selected “cutoff score”) proved to be extremely ineffective at this particular classification problem, due to the complexity of the relationships between the variables recorded for the dataset and the receipt of housing assistance. A logistic model was a good start, providing a reasonably accurate classifier. The logistic model suffered only a minimal loss of accuracy after greatly reducing the complexity of the model, providing a fairly accurate and robust model which could be applied quite effectively to this problem. The accuracy of the logistic model was roughly matched by a simple classification tree, which also proved quite resilient to forced reduction in complexity, so a robust random forest model was developed using bagging and boosting, resulting in an extremely effective classifier. This is the model which was ultimately selected. The ROC curve below was generated for a more thorough comparison of the accuracy of each model.
+
+
+```{r}
+#### Generate ROC curves using the previously-defined function
+
+# Create a data frame for each model's ROC curve
+lin.roc.df <- roc.curve(regsubsets.predictions, housingClean$FMTASSISTED, "Linear")
+log.roc.df <- roc.curve(glm.probs, housingClean$FMTASSISTED, "Full Logistic")
+lasso.roc.df <- roc.curve(lasso.probs, housingClean$FMTASSISTED, "Logistic (10 predictors)")
+rf.roc.df <- roc.curve(rf.probs, housing.test$FMTASSISTED, "Random Forest")
+
+# All ROC curve dataframes should be binded together, in order to be displayed 
+# on a single graph with a legend.
+all.roc.curves <- rbind(lin.roc.df, log.roc.df, lasso.roc.df, rf.roc.df)
+
+# Plot all of the ROC curves using the all.roc.curves data frame
+ggplot(data = all.roc.curves, mapping = aes(x = FPR, y = TPR, color = model)) +
+  geom_line(size = 0.6) +
+  geom_abline(slope=1, intercept=0, linetype = "dashed") +
+  theme_gray() +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_y_continuous(expand = c(0,0)) +
+  labs(title = "Comparison of Model ROC Curves",
+       x = "False Positive Rate",
+       y = "True Positive Rate",
+       col = "")
+```
+
+
+Finally, the importance of each predictor in the final model was evaluated to ensure that the variables being used were logical and appropriate. Each important variable was found to have a clear and direct connection to the awarding of housing assistance, with the most important variables being the monthly housing costs, income (relative to the area’s median income), and the number of units in the building – all having reasonable, direct relationships with assisted housing.
+
+# Discussion
+
+```{r include=FALSE}
+rf.probsFinal <- predict(boost.housing.cv, housingClean, type = "response") # Extract "response" values from random forest
+min.p <- min(rf.probsFinal)
+max.p <- max(rf.probsFinal)
+rf.probsFinal <- (rf.probsFinal - min.p)/(max.p - min.p) # Rescale response values to 0-1 scale for input into ROC function
+
+needHelp <- false.positives(rf.probsFinal, housingClean$FMTASSISTED)
+examineCloser <- false.negatives(rf.probsFinal, housingClean$FMTASSISTED)
+```
+
+Ultimately, we found that this problem was not as complex to classify as we may have initally believed. Early theories may have been that things like regionality, the quality of the housing, and other characteristics may have played a large role in the classification process turned out not to be true. Ultimately, the two biggest factors ended up being strictly monetary concerns with monthly housing costs and how an individual's income relates to the median for their area.
+
+There are a number of reasons why this could be, but the most likely is that the government's definition for whether someone requires assistance or not primiarly depends on a person's income and their expenses. While this makes sense as they are objective measures that are easy to track and plug into formulas to determine assistance, it does indicate an opportunity for further study. What beyond simplistic measures of income and expenses can we look at to identify others who need assistance?
+
+Ultimately, regarding our initial question of trying to identify households that may require assitance that are not receiving it, we have developed a list of the indexes for these titled `needHelp`, which is comprised of `r length(needHelp)`. Looking further at these households may be warranted to see if they have needs that could be met by current services. We have also created the list `examineCloser` with `r length(examineCloser)` for individuals that may currently be using the system in a way that it was not intended. Looking at these cases in more detail may help improve the program and ensure that aid is reaching those who need it most.
+
+
