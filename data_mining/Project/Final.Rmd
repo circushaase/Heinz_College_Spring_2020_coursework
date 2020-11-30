@@ -1,7 +1,9 @@
 ---
 title: "Identifying Gaps in Assisted Housing"
-output: html_document
 author: "Michael Rath, Nicholas Maier, and Lara Haase"
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 
